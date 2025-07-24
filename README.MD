@@ -4,10 +4,11 @@ Welcome to the **KYC-DID Protocol Global** monorepo! This repository houses the 
 
 ## Table of Contents
 
+- [**Getting Started (Quick Setup)**](#getting-started-quick-setup)
 - [Project Overview](#project-overview)
 - [Architecture](#architecture)
 - [Prerequisites](#prerequisites)
-- [Getting Started](#getting-started-quick-setup)
+- [Technology Stack](#technology-stack)
 - [Development Workflow](#development-workflow)
 - [Contributing](#contributing)
 - [Security](#security)
@@ -15,9 +16,20 @@ Welcome to the **KYC-DID Protocol Global** monorepo! This repository houses the 
 
 ---
 
+<a name="getting-started-quick-setup"></a>
+## Getting Started (Quick Setup)
+
+1.  **Clone the repository:** `git clone <your-repo-url>`
+2.  **Navigate into the project root:** `cd kyc-did-protocol-global`
+3.  **Ensure all [Prerequisites](#prerequisites) are installed in your WSL environment.**
+4.  **Install project dependencies:** `pnpm install`
+5.  **Start hacking!** (Further detailed instructions for running specific apps will be provided in relevant sub-sections).
+
+---
+
 ## Prerequisites
 
-To get this project up and running on your local machine, you'll need to install several essential tools. For the best and most consistent development experience, we highly recommend using **Windows Subsystem for Linux (WSL2)** with a Linux distribution (e.g., Ubuntu) and **VS Code Remote - WSL Extension**.
+To get this project up and running on your local machine, you'll need to install several essential tools. For the best and most consistent development experience, we highly recommend using **Windows Subsystem for Linux (WSL2)** with a Linux distribution (e.g., Ubuntu) and **VS Code Remote - WSL Extension.**.
 
 Below is the definitive list of required tools and their recommended versions.
 
@@ -101,10 +113,37 @@ Below is the definitive list of required tools and their recommended versions.
 
 ---
 
-## Getting Started (Quick Setup)
+## Technology Stack
 
-1.  **Clone the repository:** `git clone <your-repo-url>`
-2.  **Navigate into the project root:** `cd kyc-did-protocol-global`
-3.  **Ensure all [Prerequisites](#prerequisites) are installed in your WSL environment.**
-4.  **Install project dependencies:** `pnpm install`
-5.  **Start hacking!** (Further detailed instructions for running specific apps will be provided in relevant sub-sections).
+This project leverages a modern, efficient, and scalable technology stack to deliver a robust decentralized KYC solution. Below are the core libraries and frameworks utilized across the monorepo:
+
+### A. Core & Shared Utilities
+* **TypeScript:** Primary programming language across the entire codebase.
+* **ESLint & Prettier:** For consistent code quality and formatting standards.
+
+### B. Frontend Applications
+* **React:** Fundamental UI library for building user interfaces.
+* **Next.js:** Production-grade React framework for the Web Application (SSR, SSG, API Routes).
+* **React Native:** Cross-platform framework for the Mobile Application.
+* **Tailwind CSS:** Utility-first CSS framework for efficient and consistent styling.
+* **Wagmi:** React Hooks collection for seamless Web3 interactions (Web).
+* **React Navigation:** Robust navigation solution for React Native.
+* **`react-native-keychain`:** Secure storage for sensitive data on mobile devices.
+* **Zustand:** Lightweight and scalable state management for frontend applications.
+
+### C. Backend Services
+* **NestJS:** A powerful, opinionated Node.js framework for building scalable and maintainable API Gateways.
+* **Ethers.js:** Comprehensive JavaScript library for interacting with the Ethereum blockchain (from backend and SDK).
+* **Prisma:** Next-generation ORM for type-safe database access (e.g., PostgreSQL), used if off-chain data persistence is required.
+* **Passport.js:** Flexible authentication middleware for Node.js.
+
+### D. Blockchain & Zero-Knowledge Proofs
+* **Solidity:** Language for writing smart contracts on the Ethereum Virtual Machine (EVM).
+* **OpenZeppelin Contracts:** Industry-standard, audited smart contract libraries for secure and upgradable implementations.
+* **Circom (Language):** Domain-specific language for defining Zero-Knowledge Proof circuits.
+* **snarkjs:** JavaScript library for ZKP trusted setups, proving, and verification.
+
+### E. Data Validation
+* **Zod:** A type-safe schema validation library, ensuring robust data integrity across application layers.
+
+---
