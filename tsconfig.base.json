@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "paths": {
+      "sdk": ["packages/sdk/src/index.ts"],
+      "shared-ui": ["packages/shared-ui/src/index.ts"],
+      "types": ["packages/types/src/index.ts"]
+    }
+  }
+}
