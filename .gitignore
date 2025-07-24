@@ -1,0 +1,8 @@
+node_modules
+dist
+.env
+.vscode/*.log
+.vscode/*.backup
+apps/*/node_modules
+packages/*/node_modules
+# Other common ignores

@@ -1,0 +1,17 @@
+{
+  "name": "kyc-did-protocol-global",
+  "version": "1.0.0",
+  "description": "KYC-DID Protocol Global Monorepo",
+  "private": true,
+  "scripts": {
+    "build": "pnpm --filter=\"./packages/*\" build && pnpm --filter=\"./apps/*\" build",
+    "lint": "pnpm --filter=\"./**\" lint",
+    "test": "pnpm --filter=\"./**\" test"
+  },
+  "devDependencies": {
+    "prettier": "^3.0.0",
+    "eslint": "^8.0.0",
+    "typescript": "^5.0.0"
+  },
+  "packageManager": "pnpm@9.0.0"
+}
