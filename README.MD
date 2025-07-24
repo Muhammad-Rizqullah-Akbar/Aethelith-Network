@@ -7,7 +7,7 @@ Welcome to the **KYC-DID Protocol Global** monorepo! This repository houses the 
 - [Project Overview](#project-overview)
 - [Architecture](#architecture)
 - [Prerequisites](#prerequisites)
-- [Getting Started](#getting-started)
+- [Getting Started](#getting-started-quick-setup)
 - [Development Workflow](#development-workflow)
 - [Contributing](#contributing)
 - [Security](#security)
