@@ -1,6 +1,6 @@
-# KYC-DID Protocol
+# ZK-KYC Protocol
 
-Welcome to the **KYC-DID Protocol Global** monorepo! This repository houses the complete ecosystem for a decentralized Know-Your-Customer (KYC) solution leveraging Decentralized Identifiers (DIDs), Verifiable Credentials (VCs), and Zero-Knowledge Proofs (ZKPs).
+Welcome to the **ZK-KYC Protocol** monorepo! This repository houses the complete ecosystem for a decentralized Know-Your-Customer (KYC) solution leveraging Decentralized Identifiers (DIDs), Verifiable Credentials (VCs), and Zero-Knowledge Proofs (ZKPs).
 
 ## Table of Contents
 
