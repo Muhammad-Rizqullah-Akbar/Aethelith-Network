@@ -9,9 +9,11 @@
     "test": "pnpm --filter=\"./**\" test"
   },
   "devDependencies": {
-    "prettier": "^3.0.0",
     "eslint": "^8.0.0",
-    "typescript": "^5.0.0"
+    "nx": "21.3.5",
+    "prettier": "^3.0.0",
+    "typescript": "^5.0.0",
+    "@nx/eslint": "21.3.5"
   },
   "packageManager": "pnpm@9.0.0"
 }
