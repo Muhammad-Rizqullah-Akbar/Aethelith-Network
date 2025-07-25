@@ -19,17 +19,17 @@ Welcome to the **ZK-KYC Protocol** monorepo! This repository houses the complete
 <a name="getting-started-quick-setup"></a>
 ## Getting Started (Quick Setup)
 
-1.  **Clone the repository:** `git clone <your-repo-url>`
-2.  **Navigate into the project root:** `cd kyc-did-protocol-global`
+1.  **Clone the repository:** `git clone https://github.com/Muhammad-Rizqullah-Akbar/ZK-KYC.git`
+2.  **Navigate into the project root:** `cd ZK-KYC`
 3.  **Ensure all [Prerequisites](#prerequisites) are installed in your WSL environment.**
 4.  **Install project dependencies:** `pnpm install`
-5.  **Start hacking!** (Further detailed instructions for running specific apps will be provided in relevant sub-sections).
+5.  **Start coding!** The next step is to deploy smart contracts to your local Ganache network.
 
 ---
 
 ## Prerequisites
 
-To get this project up and running on your local machine, you'll need to install several essential tools. For the best and most consistent development experience, we highly recommend using **Windows Subsystem for Linux (WSL2)** with a Linux distribution (e.g., Ubuntu) and **VS Code Remote - WSL Extension.**.
+To get this project up and running on your local machine, you'll need to install several essential tools. For the best and most consistent development experience, we highly recommend using **Windows Subsystem for Linux (WSL2)** with a Linux distribution (e.g., Ubuntu) and **VS Code Remote - WSL Extension.**
 
 Below is the definitive list of required tools and their recommended versions.
 
@@ -81,15 +81,15 @@ Below is the definitive list of required tools and their recommended versions.
 
 ### 3. Blockchain & Smart Contract Development
 
-* **Foundry:**
-    * **Description:** Blazingly fast, portable, and modular toolkit for Ethereum application development written in Rust. Includes `forge` (for testing, deploying) and `cast` (for EVM interaction).
-    * **Recommended Version:** Latest stable (e.g., `forge --version` >= 1.2.x)
-    * **Installation:**
-        ```bash
-        curl -L [https://foundry.paradigm.xyz](https://foundry.paradigm.xyz) | bash
-        source ~/.bashrc # or ~/.zshrc
-        foundryup
-        ```
+* **Hardhat:**
+    * **Description:** A professional Ethereum development environment and framework. Used for compiling, testing, and deploying smart contracts.
+    * **Recommended Version:** Latest stable (e.g., `npx hardhat --version` >= 2.26.x)
+    * **Installation (in `packages/protocol`):** `npm install hardhat @nomicfoundation/hardhat-toolbox`
+
+* **Ganache UI:**
+    * **Description:** A user-friendly desktop application that provides a personal Ethereum blockchain for local development. Used as the reliable local network for this project.
+    * **Installation Guide:** [Ganache Website](https://trufflesuite.com/ganache/)
+        * _Note: The `hardhat` project will be configured to connect to Ganache's RPC server._
 
 ### 4. Zero-Knowledge Proof (ZKP) Tooling
 
@@ -109,7 +109,7 @@ Below is the definitive list of required tools and their recommended versions.
     * **Description:** Essential for containerizing and orchestrating backend services (API Gateway, Provers), ensuring consistent and isolated development/production environments.
     * **Recommended Version:** Latest stable (e.g., `docker --version`, `docker compose version`)
     * **Installation Guide:** [Docker Docs: Install Docker Engine on Ubuntu (WSL)](https://docs.docker.com/engine/install/ubuntu/#install-using-the-repository)
-        *(Remember to add your user to the `docker` group and restart WSL after installation.)*
+        * _(Remember to add your user to the `docker` group and restart WSL after installation.)_
 
 ---
 
@@ -137,13 +137,15 @@ This project leverages a modern, efficient, and scalable technology stack to del
 * **Prisma:** Next-generation ORM for type-safe database access (e.g., PostgreSQL), used if off-chain data persistence is required.
 * **Passport.js:** Flexible authentication middleware for Node.js.
 
-### D. Blockchain & Zero-Knowledge Proofs
+### D. Blockchain & Smart Contract Development
+* **Hardhat:** The primary framework for smart contract development, replacing Foundry.
 * **Solidity:** Language for writing smart contracts on the Ethereum Virtual Machine (EVM).
+* **Ganache UI:** The local blockchain for development and testing.
 * **OpenZeppelin Contracts:** Industry-standard, audited smart contract libraries for secure and upgradable implementations.
+
+### E. Zero-Knowledge Proofs
 * **Circom (Language):** Domain-specific language for defining Zero-Knowledge Proof circuits.
 * **snarkjs:** JavaScript library for ZKP trusted setups, proving, and verification.
 
-### E. Data Validation
+### F. Data Validation
 * **Zod:** A type-safe schema validation library, ensuring robust data integrity across application layers.
-
----
