@@ -1,60 +1,56 @@
-import { ethers } from "hardhat";
+import { ethers, artifacts } from "hardhat";
+import * as fs from "fs";
+import * as path from "path";
 
 async function main() {
-  // Dapatkan deployer (akun pertama dari Hardhat Network atau Ganache)
+  console.log("Starting deployment script...");
+
+  // Dapatkan deployer (akun pertama dari Ganache)
   const [deployer] = await ethers.getSigners();
   console.log("Deploying contracts with the account:", deployer.address);
   console.log("Account balance:", (await ethers.provider.getBalance(deployer.address)).toString());
 
-  // --- Deploy Contracts ---
+  // === Deploy Contracts ===
 
-  // 1. Deploy DIDRegistry
-  const DIDRegistry = await ethers.getContractFactory("DIDRegistry");
-  const didRegistry = await DIDRegistry.deploy();
-  await didRegistry.waitForDeployment();
-  console.log("DIDRegistry deployed to:", await didRegistry.getAddress());
+  // Dapatkan semua nama kontrak dari Hardhat artifacts
+  const contractNames = [
+    "DIDRegistry",
+    "VCKycSchema",
+    "VCKycIssuer",
+    "VCRevocationRegistry",
+    "ZKPVerifierRouter",
+    "SmartAccountFactory",
+    "EmergencyPause",
+    "SecurityAuditLog",
+  ];
 
-  // 2. Deploy VCKycSchema
-  const VCKycSchema = await ethers.getContractFactory("VCKycSchema");
-  const vcKycSchema = await VCKycSchema.deploy();
-  await vcKycSchema.waitForDeployment();
-  console.log("VCKycSchema deployed to:", await vcKycSchema.getAddress());
+  const deployedAddresses: { [key: string]: string } = {};
 
-  // 3. Deploy VCKycIssuer
-  const VCKycIssuer = await ethers.getContractFactory("VCKycIssuer");
-  const vcKycIssuer = await VCKycIssuer.deploy(await didRegistry.getAddress(), await vcKycSchema.getAddress());
-  await vcKycIssuer.waitForDeployment();
-  console.log("VCKycIssuer deployed to:", await vcKycIssuer.getAddress());
+  for (const contractName of contractNames) {
+    console.log(`\nDeploying ${contractName}...`);
+    try {
+      const ContractFactory = await ethers.getContractFactory(contractName);
+      const contract = await ContractFactory.deploy();
+      await contract.waitForDeployment();
+      const address = await contract.getAddress();
+      console.log(`${contractName} deployed to:`, address);
+      deployedAddresses[contractName] = address;
+    } catch (error) {
+      console.error(`Failed to deploy ${contractName}:`, error);
+      process.exitCode = 1;
+      return; // Hentikan deployment jika ada yang gagal
+    }
+  }
 
-  // 4. Deploy VCRevocationRegistry
-  const VCRevocationRegistry = await ethers.getContractFactory("VCRevocationRegistry");
-  const vcRevocationRegistry = await VCRevocationRegistry.deploy();
-  await vcRevocationRegistry.waitForDeployment();
-  console.log("VCRevocationRegistry deployed to:", await vcRevocationRegistry.getAddress());
+  console.log("\nAll core contracts deployed successfully!");
 
-  // 5. Deploy ZKPVerifierRouter
-  const ZKPVerifierRouter = await ethers.getContractFactory("ZKPVerifierRouter");
-  const zkpVerifierRouter = await ZKPVerifierRouter.deploy();
-  await zkpVerifierRouter.waitForDeployment();
-  console.log("ZKPVerifierRouter deployed to:", await zkpVerifierRouter.getAddress());
-
-  // 6. Deploy SmartAccountFactory
-  const SmartAccountFactory = await ethers.getContractFactory("SmartAccountFactory");
-  const smartAccountFactory = await SmartAccountFactory.deploy();
-  await smartAccountFactory.waitForDeployment();
-  console.log("SmartAccountFactory deployed to:", await smartAccountFactory.getAddress());
-
-  // 7. Deploy EmergencyPause
-  const EmergencyPause = await ethers.getContractFactory("EmergencyPause");
-  const emergencyPause = await EmergencyPause.deploy();
-  await emergencyPause.waitForDeployment();
-  console.log("EmergencyPause deployed to:", await emergencyPause.getAddress());
-
-  // 8. Deploy SecurityAuditLog
-  const SecurityAuditLog = await ethers.getContractFactory("SecurityAuditLog");
-  const securityAuditLog = await SecurityAuditLog.deploy();
-  await securityAuditLog.waitForDeployment();
-  console.log("SecurityAuditLog deployed to:", await securityAuditLog.getAddress());
+  // Simpan alamat kontrak ke file deployed_contracts.json
+  const deployedAddressesPath = path.join(__dirname, "..", "deployed_contracts.json");
+  fs.writeFileSync(
+    deployedAddressesPath,
+    JSON.stringify(deployedAddresses, null, 2)
+  );
+  console.log("Deployed contract addresses saved to deployed_contracts.json");
 }
 
 main().catch((error) => {
