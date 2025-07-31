@@ -41,7 +41,7 @@ export default function HomePage() {
 
       <header className="hero-section">
         <h1 className="hero-title">
-          Hi Aetheliters, Nice to Meet You!
+          Hi Aetheliths, Nice to Meet You!
         </h1>
         <p className="mx-auto max-w-2xl hero-description">
           Platform terdesentralisasi Anda untuk mengelola identitas digital (DID) dan kredensial terverifikasi (VC) dengan privasi dan keamanan tinggi.
