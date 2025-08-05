@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # Copyright IBM Corp All Rights Reserved
-#
+
 # SPDX-License-Identifier: Apache-2.0
 #
 
@@ -9,7 +9,7 @@
 # and applications. The test network consists of two organizations with one
 # peer each, and a single node Raft ordering service. Users can also use this
 # script to create a channel deploy a chaincode on the channel
-#
+
 # prepending $PWD/../bin to PATH to ensure we are picking up the correct binaries
 # this may be commented out to resolve installed version of tools if desired
 #
