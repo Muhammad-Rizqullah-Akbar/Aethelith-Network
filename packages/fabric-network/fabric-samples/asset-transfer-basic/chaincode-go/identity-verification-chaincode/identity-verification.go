@@ -205,23 +205,22 @@ func (s *SmartContract) GetVCStatus(ctx contractapi.TransactionContextInterface,
 
 
 func (s *SmartContract) GetIdentity(ctx contractapi.TransactionContextInterface, id string) (*Identity, error) {
-	
+	// Ambil MSP ID pemanggil
 	callerMSPID, err := ctx.GetClientIdentity().GetMSPID()
 	if err != nil {
 		return nil, fmt.Errorf("gagal mendapatkan MSP ID pemanggil: %v", err)
 	}
 
-	
+	// Ambil UID (x509 identity) pemanggil
 	callerUID, err := ctx.GetClientIdentity().GetID()
 	if err != nil {
 		return nil, fmt.Errorf("gagal mendapatkan UID pemanggil: %v", err)
 	}
 
-	
-	if callerMSPID != "OrgValidatorMSP" && callerUID != id {
-		return nil, fmt.Errorf("hanya validator atau user pemilik data yang dapat mengakses fungsi ini")
-	}
+	// Logging ke stdout (akan terlihat di Docker logs)
+	fmt.Printf("[GET_IDENTITY] Permintaan dari MSP ID: %s, UID: %s\n", callerMSPID, callerUID)
 
+	// Ambil data dari private collection
 	identityJSON, err := ctx.GetStub().GetPrivateData("collectionUserIdentities", id)
 	if err != nil {
 		return nil, fmt.Errorf("gagal membaca data dari private collection: %v", err)
@@ -230,14 +229,21 @@ func (s *SmartContract) GetIdentity(ctx contractapi.TransactionContextInterface,
 		return nil, fmt.Errorf("user dengan ID '%s' tidak ditemukan", id)
 	}
 
+	// Unmarshal JSON ke struct
 	var identity Identity
 	err = json.Unmarshal(identityJSON, &identity)
 	if err != nil {
 		return nil, fmt.Errorf("gagal unmarshal JSON: %v", err)
 	}
 
+	// Validasi hak akses: hanya Org2 (validator) atau pemilik data
+	if callerMSPID != "Org2MSP" && callerUID != identity.ID {
+		return nil, fmt.Errorf("hanya validator atau user pemilik data yang dapat mengakses fungsi ini")
+	}
+
 	return &identity, nil
 }
+
 
 
 func main() {
