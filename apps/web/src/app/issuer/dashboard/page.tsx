@@ -1,27 +1,38 @@
 // apps/web/src/app/issuer/dashboard/page.tsx
 'use client';
 
-import { useAccount } from 'wagmi';
 import { AiOutlineBank, AiOutlineCheckSquare, AiOutlinePlusSquare } from 'react-icons/ai';
+import { useAuth } from '../../../components/layout/AuthProvider';
 
 export default function IssuerDashboardPage() {
-  const { address, isDisconnected } = useAccount();
+  const { userDid, isConnected } = useAuth();
 
-  if (isDisconnected) {
+  // Tampilan loading
+  if (userDid === undefined) {
     return (
       <div className="hero-section">
-        <h1 className="hero-title">Hubungkan Dompet Anda</h1>
-        <p className="hero-description">Untuk mengakses dashboard Issuer, Anda perlu menghubungkan dompet kripto Anda.</p>
+        <h1 className="hero-title">Memuat...</h1>
       </div>
     );
   }
 
+  // Tampilan jika pengguna belum login
+  if (!isConnected) {
+    return (
+      <div className="hero-section">
+        <h1 className="hero-title">Akses Ditolak</h1>
+        <p className="hero-description">Untuk mengakses dashboard Issuer, Anda perlu login terlebih dahulu.</p>
+      </div>
+    );
+  }
+
+  // Tampilan jika pengguna sudah login
   return (
     <div className="py-12">
       <header className="hero-section text-left">
         <h1 className="hero-title">Dashboard Issuer</h1>
         <p className="hero-description mx-0 text-left">
-          Selamat datang kembali, {address?.substring(0, 6)}...{address?.substring(address.length - 4)}. Berikut adalah ringkasan aktivitas penerbitan Verifiable Credentials Anda.
+          Selamat datang kembali, {userDid?.substring(0, 6)}...{userDid?.substring(userDid.length - 4)}. Berikut adalah ringkasan aktivitas penerbitan Verifiable Credentials Anda.
         </p>
       </header>
 
