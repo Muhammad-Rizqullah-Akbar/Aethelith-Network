@@ -8,7 +8,7 @@ export function Navbar() {
       <div className={styles.navbarContainer}>
         <div className={styles.navbarLeft}>
           <Link href="/">
-            <span className={styles.navbarLogo}>Aethelith Network</span>
+            <img src="/Logo.png" alt="Aethelith Network" className={styles.navbarLogo} />
           </Link>
           <div className={styles.navbarLinks}>
             <Link href="/about" className={styles.navLink}>Tentang Kami</Link>
