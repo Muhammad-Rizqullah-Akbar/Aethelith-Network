@@ -1,0 +1,150 @@
+/* apps/web/src/app/about/about.module.css */
+
+.aboutContainer {
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: 4rem 2rem;
+  background-color: var(--primary-bg);
+  color: var(--text-primary);
+  min-height: 100vh;
+}
+
+.aboutHeader {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.aboutTitle {
+  font-size: 3rem;
+  font-weight: 800;
+  letter-spacing: -0.05em;
+  margin-bottom: 1rem;
+}
+
+.aboutDescription {
+  font-size: 1.25rem;
+  color: var(--text-secondary);
+  max-width: 50rem;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.aboutMainContent {
+  max-width: 60rem;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.section {
+  margin-bottom: 4rem;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.sectionIcon {
+  font-size: 2rem;
+  color: var(--accent-color-start);
+}
+
+.sectionTitle {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.sectionText {
+  color: var(--text-secondary);
+  margin-bottom: 1rem;
+}
+
+.teamGrid {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+}
+
+.teamCard {
+  background-color: var(--secondary-bg);
+  padding: 2rem;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  border: 1px solid var(--border-color);
+  text-align: center;
+}
+
+.avatar {
+  width: 6rem;
+  height: 6rem;
+  border-radius: 50%;
+  background-color: var(--primary-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+  border: 1px solid var(--border-color);
+}
+
+.avatarIcon {
+  font-size: 3rem;
+  color: var(--text-secondary);
+}
+
+.teamName {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.teamRole {
+  font-size: 1rem;
+  color: var(--accent-color-start);
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+.teamDescription {
+  color: var(--text-secondary);
+}
+
+.contactInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.contactItem {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: var(--text-secondary);
+}
+
+.contactIcon {
+  font-size: 1.5rem;
+  color: var(--accent-color-start);
+}
+
+.contactText {
+  font-size: 1rem;
+}
+
+.divider {
+  height: 1px;
+  background-color: var(--border-color);
+  margin: 4rem 0;
+}
+
+@media (max-width: 768px) {
+  .aboutContainer {
+    padding: 2rem 1rem;
+  }
+  .aboutTitle {
+    font-size: 2.5rem;
+  }
+}
