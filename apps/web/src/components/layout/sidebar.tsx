@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { AiFillDashboard, AiOutlineUser, AiOutlineRight, AiOutlineLeft } from 'react-icons/ai';
 import { IoIosBusiness, IoIosSearch, IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
 import { Url } from 'next/dist/shared/lib/router/router';
+import styles from './sidebar.module.css';
 
 interface SubItem {
   name: string;
@@ -74,43 +75,43 @@ export function Sidebar({ isCollapsed, onToggleClick }: SidebarProps) {
   ];
 
   return (
-    <aside className={`sidebar ${isCollapsed ? 'sidebar-collapsed' : ''}`}>
-      <div className="sidebar-header">
-        <button onClick={onToggleClick} className="sidebar-toggle-button">
+    <aside className={`${styles.sidebar} ${isCollapsed ? styles.sidebarCollapsed : ''}`}>
+      <div className={styles.sidebarHeader}>
+        <button onClick={onToggleClick} className={styles.sidebarToggleButton}>
           {isCollapsed ? <AiOutlineRight /> : <AiOutlineLeft />}
         </button>
       </div>
-      <nav className="sidebar-nav">
+      <nav className={styles.sidebarNav}>
         {navItems.map((item) => (
           <div key={item.name}>
             {item.type === 'link' ? (
-              <Link href={item.href} className="sidebar-link">
-                <span className="sidebar-icon">{item.icon}</span>
+              <Link href={item.href} className={styles.sidebarLink}>
+                <span className={styles.sidebarIcon}>{item.icon}</span>
                 {!isCollapsed && <span>{item.name}</span>}
               </Link>
             ) : (
               <>
                 <button
                   onClick={() => toggleDropdown(item.id)}
-                  className={`dropdown-link ${dropdowns[item.id] ? 'dropdown-active' : ''}`}
+                  className={`${styles.dropdownLink} ${dropdowns[item.id] ? styles.dropdownActive : ''}`}
                 >
                   <div className="flex items-center">
-                    <span className="sidebar-icon">{item.icon}</span>
+                    <span className={styles.sidebarIcon}>{item.icon}</span>
                     {!isCollapsed && <span>{item.name}</span>}
                   </div>
                   {!isCollapsed && (
-                    <span className="dropdown-arrow">
+                    <span className={styles.dropdownArrow}>
                       {dropdowns[item.id] ? <IoIosArrowUp /> : <IoIosArrowDown />}
                     </span>
                   )}
                 </button>
                 {!isCollapsed && dropdowns[item.id] && (
-                  <div className="dropdown-container">
+                  <div className={styles.dropdownContainer}>
                     {item.subItems.map((subItem) => (
                       <Link
                         key={subItem.name}
                         href={subItem.href}
-                        className="dropdown-item"
+                        className={styles.dropdownItem}
                       >
                         {subItem.name}
                       </Link>
@@ -122,7 +123,7 @@ export function Sidebar({ isCollapsed, onToggleClick }: SidebarProps) {
           </div>
         ))}
       </nav>
-      <div className="sidebar-footer">
+      <div className={styles.sidebarFooter}>
         {!isCollapsed && <span>© 2025 ZK-KYC Protocol</span>}
       </div>
     </aside>

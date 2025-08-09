@@ -1,2 +1,76 @@
-.page {
+/* apps/web/src/app/page.module.css */
+
+
+.homePageContainer {
+  align-items: flex-start;
+  justify-content: center;
+  width: 100%;
+  max-width: 80rem;
+  margin: 0 auto;
+  color: #1A1A1A;
+  text-align: left;
+  height: 100vh;
+  padding-top: 10rem;
+}
+
+.heroContent {
+  width: 100%;
+  max-width: 50rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  margin-bottom: 3rem;
+}
+
+.heroPreTitle {
+  font-size: 1.25rem;
+  font-weight: 400;
+  color: #1A1A1A;
+}
+
+.heroTitle {
+  font-size: 5rem;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.05em;
+  text-transform: uppercase;
+}
+
+.heroDescription {
+  font-size: 1.5rem;
+  color: #1A1A1A;
+  line-height: 1;
+}
+
+.heroButtons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.primaryButton {
+  background: linear-gradient(to right, #ff7e5f, #feb47b);
+  color: #fff;
+  padding: 1rem 2.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.secondaryButton {
+  background-color: transparent;
+  color: #1a1a1a;
+  padding: 1rem 2.5rem;
+  border: 2px solid #1a1a1a;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+}
+
+.secondaryButton:hover {
+  background-color: #1a1a1a;
+  color: #fff;
 }

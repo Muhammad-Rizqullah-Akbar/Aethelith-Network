@@ -1,0 +1,90 @@
+/* apps/web/src/app/dashboard/dashboard.module.css */
+
+.heroSection {
+    text-align: left;
+    margin-bottom: 5rem;
+    padding: 0 2rem;
+}
+
+.heroTitle {
+    font-size: 3.5rem;
+    font-weight: 900;
+    margin-bottom: 1.5rem;
+    color: var(--text-primary);
+    letter-spacing: -0.05em;
+}
+
+.heroDescription {
+    font-size: 1.25rem;
+    color: var(--text-secondary);
+    max-width: 48rem;
+    margin: 0 auto;
+    line-height: 1.75rem;
+}
+
+.roleCardsSection {
+    max-width: 80rem;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.roleCardsGrid {
+    display: grid;
+    gap: 2.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(22rem, 1fr));
+}
+
+.roleCard {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--secondary-bg);
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    box-shadow: var(--box-shadow);
+    transition: transform var(--transition-duration) ease-in-out, box-shadow var(--transition-duration) ease-in-out;
+    border: 1px solid var(--border-color);
+}
+
+.roleCard:hover {
+    transform: translateY(-0.5rem);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+}
+
+.cardIcon {
+    font-size: 3rem;
+    color: var(--accent-color-start);
+    margin-bottom: 1rem;
+}
+
+.cardTitle {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+}
+
+.cardDescription {
+    color: var(--text-secondary);
+    line-height: 1.6rem;
+    margin-bottom: 2rem;
+}
+
+.cardButton {
+    background: linear-gradient(to right, var(--accent-color-start), var(--accent-color-end));
+    color: var(--accent-text);
+    padding: 0.8rem 1.5rem;
+    border-radius: var(--border-radius);
+    text-align: center;
+    font-weight: 600;
+    text-decoration: none;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.cardButton:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+}
