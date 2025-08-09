@@ -1,3 +1,4 @@
+// hooks/useAuthLogic.ts
 'use client';
 
 import { useState } from 'react';
@@ -31,15 +32,17 @@ export function useAuthLogic() {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
-      
+
       // Dapatkan ID Token pengguna
       const idToken = await getIdToken(user);
 
       // Gunakan ID Token sebagai keyMaterial untuk enkripsi
       await encryptAndStoreData(user.uid, idToken, name, nik, alamat, tanggalLahir);
 
-      // Arahkan ke halaman profil setelah pendaftaran sukses
-      router.push('/profile');
+      // PERUBAHAN UTAMA DI SINI:
+      // Arahkan ke halaman login setelah pendaftaran sukses
+      // Tambahkan query parameter 'registered=true' untuk notifikasi
+      router.push('/login?registered=true'); // 👈 Modifikasi ini
     } catch (err: any) {
       setError(err.message);
     } finally {
