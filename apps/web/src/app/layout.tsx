@@ -18,22 +18,26 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
   const isAuthPage = pathname === '/login' || pathname === '/register';
   const isHomePage = pathname === '/';
-  const isProtectedPage = pathname.startsWith('/profile');
+  const isProfilePage = pathname === '/profile';
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme');
-    document.documentElement.setAttribute('data-theme', savedTheme === 'light' ? 'light' : 'dark');
+    if (!savedTheme) {
+      document.documentElement.setAttribute('data-theme', 'light');
+    } else {
+      document.documentElement.setAttribute('data-theme', savedTheme);
+    }
   }, []);
 
   const toggleSidebar = () => {
     setIsSidebarCollapsed(!isSidebarCollapsed);
   };
 
-  // Tata letak untuk halaman login/register dan halaman yang dilindungi jika belum login
-  if (isAuthPage || (isProtectedPage && !isConnected)) {
+  // Tata letak untuk halaman login/register
+  if (isAuthPage) {
     return (
       <html lang="en">
-        <body className={inter.className}>
+        <body>
           <Providers>
             <main>
               {children}
@@ -44,14 +48,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     );
   }
 
-  // Tata letak untuk halaman landing (hanya navbar)
-  if (isHomePage) {
+  // Tata letak untuk halaman landing dan profil
+  if (isHomePage || isProfilePage) {
     return (
       <html lang="en">
-        <body className={inter.className}>
+        <body>
           <Providers>
             <main className="main-content main-content-full">
-              <Navbar />
               {children}
             </main>
           </Providers>
@@ -60,10 +63,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     );
   }
   
-  // Tata letak untuk semua halaman lain dengan sidebar DAN navbar
+  // Tata letak untuk semua halaman lain dengan sidebar
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body>
         <Providers>
           <div className="body-container">
             <Sidebar isCollapsed={isSidebarCollapsed} onToggleClick={toggleSidebar} />
