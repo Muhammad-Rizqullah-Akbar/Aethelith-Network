@@ -16,6 +16,7 @@
   left: 0;
   right: 0;
   animation: slideInFromTop 0.3s ease-out;
+  z-index: 50
 }
 
 @keyframes slideInFromTop {

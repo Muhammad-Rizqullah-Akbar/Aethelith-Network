@@ -102,14 +102,14 @@ export default function DashboardPage() {
           {/* Tombol yang mengarah ke halaman otentikasi developer untuk peran Validator */}
             <h3 className={styles.cardTitle}>Masuk sebagai Validator</h3>
             <p className={styles.cardDescription}>Verifikasi data dan terbitkan Verifiable Credentials.</p>
-          <Link href="/dev-auth?role=validator" className={styles.actionCard}>
+          <Link href="/dev-auth?role=validator" >
             <span className={styles.cardButton}>Login sebagai Validator</span>
           </Link>
           
           {/* Tombol yang mengarah ke halaman otentikasi developer untuk peran Verifier */}
             <h3 className={styles.cardTitle}>Masuk sebagai Verifier</h3>
             <p className={styles.cardDescription}>Akses bukti kredensial yang telah divalidasi.</p>
-          <Link href="/dev-auth?role=verifier" className={styles.actionCard}>
+          <Link href="/dev-auth?role=verifier">
             <span className={styles.cardButton}>Login sebagai Verifier</span>
           </Link>
         </div>
@@ -124,6 +124,7 @@ export default function DashboardPage() {
           <div className={styles.actionCard}>
             <h3 className={styles.cardTitle}>Verifikasi Kewarganegaraan</h3>
             <p className={styles.cardDescription}>Lakukan verifikasi identitas resmi dengan data kependudukan.</p>
+            
             <button onClick={handleStartValidation} className={styles.cardButton}>
               Validasi Data
             </button>

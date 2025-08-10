@@ -112,30 +112,42 @@
 }
 
 .primaryButton {
-  background: linear-gradient(to right, #ff7e5f, #feb47b);
-  color: #fff;
+  background: linear-gradient(to right, var(--accent-color-start), var(--accent-color-end));
+  color: var(--accent-text);
   padding: 1rem 2.5rem;
-  border-radius: 0.5rem;
+  border-radius: var(--border-radius);
   font-weight: 600;
   text-decoration: none;
   transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.primaryButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
 }
 
 .secondaryButton {
-  background-color: transparent;
+  background-color: var(--secondary-bg);
   color: var(--text-primary);
   padding: 1rem 2.5rem;
-  border: 2px solid var(--text-primary);
-  border-radius: 0.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
   font-weight: 600;
   text-decoration: none;
-  transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+  transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, transform 0.2s ease-in-out, border-color 0.2s ease-in-out;
+  /* Menambah border-color */
+  box-shadow: var(--box-shadow);
 }
 
 .secondaryButton:hover {
-  background-color: var(--text-primary);
-  color: var(--primary-bg);
+  background-color: var(--accent-color-start);
+  /* Warna latar saat hover */
+  color: var(--accent-text);
+  /* Warna teks saat hover */
+  border-color: var(--accent-color-start);
+  /* Warna border saat hover */
+  transform: translateY(-2px);
 }
 
 .mainContent {

@@ -1,35 +1,37 @@
-"use client";
+// apps/web/src/app/page.tsx
+'use client';
 
 import Link from 'next/link';
 import { AiOutlineUser, AiOutlineLock, AiOutlineSwap } from 'react-icons/ai';
 import { Navbar } from '../components/layout/navbar';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import styles from './page.module.css';
 import navbarStyles from '../components/layout/navbar.module.css';
-import { useAuth } from '../components/layout/AuthProvider'; // Impor hook useAuth
+import { useAuth } from '../components/layout/AuthProvider';
 
 const features = [
   {
     icon: <AiOutlineUser />,
-    title: "Self-Sovereign Identity",
-    description: "Pengguna memiliki kendali penuh atas identitas digital mereka, bukan entitas terpusat."
+    title: 'Self-Sovereign Identity',
+    description: 'Pengguna memiliki kendali penuh atas identitas digital mereka, bukan entitas terpusat.',
   },
   {
     icon: <AiOutlineLock />,
-    title: "Zero-Knowledge Proof",
-    description: "Memverifikasi data tanpa perlu mengungkapkan informasi sensitif, menjaga privasi maksimal."
+    title: 'Zero-Knowledge Proof',
+    description: 'Memverifikasi data tanpa perlu mengungkapkan informasi sensitif, menjaga privasi maksimal.',
   },
   {
     icon: <AiOutlineSwap />,
-    title: "Verifikasi Lintas Platform",
-    description: "Satu kali input data untuk verifikasi di berbagai layanan digital yang berbeda."
+    title: 'Verifikasi Lintas Platform',
+    description: 'Satu kali input data untuk verifikasi di berbagai layanan digital yang berbeda.',
   },
 ];
 
 export default function HomePage() {
   const heroRef = useRef<HTMLDivElement>(null);
   const navbarRef = useRef<HTMLDivElement>(null);
-  const { isConnected } = useAuth(); // Dapatkan status koneksi pengguna
+  const { isConnected } = useAuth();
+  const [navbarHeight, setNavbarHeight] = useState(0); // State untuk menyimpan tinggi navbar
 
   useEffect(() => {
     const handleScroll = () => {
@@ -42,14 +44,25 @@ export default function HomePage() {
         }
       }
     };
-
+    
+    // Simpan tinggi navbar saat komponen mount
+    const updateNavbarHeight = () => {
+      if (navbarRef.current) {
+        setNavbarHeight(navbarRef.current.offsetHeight);
+      }
+    };
+    
+    // Panggil fungsi update saat mount dan resize
+    updateNavbarHeight();
+    window.addEventListener('resize', updateNavbarHeight);
     window.addEventListener('scroll', handleScroll);
+
     return () => {
       window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', updateNavbarHeight);
     };
   }, []);
 
-  // Tentukan tujuan tombol Get Started
   const getStartedHref = isConnected ? '/dashboard' : '/register';
 
   return (
@@ -84,7 +97,8 @@ export default function HomePage() {
         <Navbar />
       </div>
 
-      <div className={styles.mainContent}>
+      {/* Konten utama sekarang memiliki padding-top dinamis */}
+      <div className={styles.mainContent} style={{ paddingTop: `${navbarHeight + 4*16}px` }}>
         {/* Fitur Utama */}
         <section className={styles.featuresSection}>
           <div className={styles.sectionHeader}>

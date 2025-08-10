@@ -122,8 +122,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body className={inter.className}>
         <Providers>
-          <main className={styles.mainContentFull}>
             <Navbar className="fixed-navbar" />
+          <main className={styles.mainContentFull}>
             {children}
           </main>
         </Providers>
