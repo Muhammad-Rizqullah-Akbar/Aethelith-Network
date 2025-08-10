@@ -1,3 +1,4 @@
+// apps/web/src/app/layout.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -8,18 +9,38 @@ import { Navbar } from '../components/layout/navbar';
 import { Inter } from 'next/font/google';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '../components/layout/AuthProvider';
+import { AiOutlineMenu, AiOutlineClose } from 'react-icons/ai';
+import styles from './layout.module.css';
 
 const inter = Inter({ subsets: ['latin'] });
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const pathname = usePathname();
   const { isConnected } = useAuth();
 
-  const isAuthPage = pathname === '/login' || pathname === '/register';
+  const isAuthPage = pathname === '/login' || pathname === '/register' || pathname === '/dev-auth' || pathname === '/dev-register';
   const isHomePage = pathname === '/';
-  const shouldShowSidebar = pathname.startsWith('/dashboard') || pathname.startsWith('/issuer') || pathname.startsWith('/holder') || pathname.startsWith('/verifier');
-  const showNavbarOnOtherPages = !isAuthPage && !isHomePage && !shouldShowSidebar;
+  
+  const shouldShowDashboardLayout = pathname.startsWith('/dashboard') || pathname.startsWith('/my-vcs') || pathname.startsWith('/issuer');
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+
+    return () => {
+      window.removeEventListener('resize', checkMobile);
+    };
+  }, []);
+
+  const toggleSidebar = () => {
+    setIsSidebarCollapsed(!isSidebarCollapsed);
+  };
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme');
@@ -29,15 +50,19 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       document.documentElement.setAttribute('data-theme', savedTheme);
     }
   }, []);
-
-  const toggleSidebar = () => {
-    setIsSidebarCollapsed(!isSidebarCollapsed);
-  };
+  
+  useEffect(() => {
+    if (isMobile) {
+      setIsSidebarCollapsed(true);
+    } else {
+      setIsSidebarCollapsed(false);
+    }
+  }, [isMobile]);
 
   if (isAuthPage || isHomePage) {
     return (
       <html lang="en">
-        <body>
+        <body className={inter.className}>
           <Providers>
             <main>
               {children}
@@ -47,16 +72,27 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </html>
     );
   }
-  
-  if (shouldShowSidebar) {
+
+  if (shouldShowDashboardLayout) {
     return (
       <html lang="en">
-        <body>
+        <body className={inter.className}>
           <Providers>
-            <div className="body-container">
+            <div className={styles.bodyContainer}>
+              {isMobile && (
+                <button 
+                  onClick={toggleSidebar} 
+                  className={styles.mobileMenuButton}
+                  style={{ zIndex: 150 }}
+                >
+                  {isSidebarCollapsed ? <AiOutlineMenu /> : <AiOutlineClose />}
+                </button>
+              )}
               <Sidebar isCollapsed={isSidebarCollapsed} onToggleClick={toggleSidebar} />
-              <div className={`main-content ${isSidebarCollapsed ? 'main-content-collapsed' : ''}`}>
-                <main className="main-content-inner">
+              <div 
+                className={`${styles.mainContent} ${isSidebarCollapsed ? styles.mainContentCollapsed : ''}`}
+              >
+                <main className={styles.mainContentInner}>
                   {children}
                 </main>
               </div>
@@ -69,9 +105,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
   return (
     <html lang="en">
-      <body>
+      <body className={inter.className}>
         <Providers>
-          <main className="main-content main-content-full">
+          <main className={styles.mainContentFull}>
             <Navbar className="fixed-navbar" />
             {children}
           </main>

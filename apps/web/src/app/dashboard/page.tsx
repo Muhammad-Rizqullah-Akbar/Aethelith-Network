@@ -1,10 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
-import { AiOutlineIdcard, AiOutlineEye, AiOutlineEyeInvisible, AiOutlineCheckCircle, AiOutlineLock, AiOutlineUser } from 'react-icons/ai';
+import Link from 'next/link'; // Import Link dari next/link
+import { AiOutlineIdcard, AiOutlineEye, AiOutlineEyeInvisible, AiOutlineCheckCircle, AiOutlineLock, AiOutlineUser, AiOutlineTeam } from 'react-icons/ai';
 import { useAuth } from '../../components/layout/AuthProvider';
 import styles from './dashboard.module.css';
+import AccessDenied from '../../components/throwError/AccessDenied';
 
 // Data dummy untuk demo
 const dummyPartners = [
@@ -53,7 +54,7 @@ export default function DashboardPage() {
   };
 
   const handleAccessData = () => {
-    if (accessPassword === '123456') { // Password dummy untuk demo
+    if (accessPassword === '123456') {
       setShowSensitiveData(true);
       setShowDataModal(false);
       setAccessError('');
@@ -70,7 +71,6 @@ export default function DashboardPage() {
     setIsVerifying(true);
     setShowValidationModal(false);
     
-    // Simulasi proses validasi
     await new Promise(resolve => setTimeout(resolve, 3000));
     
     setIsVerifying(false);
@@ -81,15 +81,8 @@ export default function DashboardPage() {
     setShowVerificationComplete(false);
   };
 
-
   if (!isConnected) {
-    return (
-      <div className={styles.accessDeniedContainer}>
-        <h1 className={styles.accessDeniedTitle}>Akses Ditolak</h1>
-        <p className={styles.accessDeniedDescription}>Untuk mengakses dashboard, Anda perlu login.</p>
-        <Link href="/login" className={styles.loginButton}>Login</Link>
-      </div>
-    );
+    return <AccessDenied />;
   }
 
   return (
@@ -98,6 +91,29 @@ export default function DashboardPage() {
         <h1 className={styles.dashboardTitle}>Dashboard</h1>
         <p className={styles.dashboardDescription}>Pilih layanan yang ingin Anda gunakan.</p>
       </header>
+      
+      {/* Bagian Login sebagai Developer */}
+      <section className={styles.section}>
+        <h2 className={styles.sectionTitle}>
+          <AiOutlineTeam className={styles.sectionIcon} /> Login sebagai Developer
+        </h2>
+        <p className={styles.sectionDescription}>Masuk sebagai Validator atau Verifier untuk mengelola kredensial.</p>
+        <div className={styles.cardGrid}>
+          {/* Tombol yang mengarah ke halaman otentikasi developer untuk peran Validator */}
+            <h3 className={styles.cardTitle}>Masuk sebagai Validator</h3>
+            <p className={styles.cardDescription}>Verifikasi data dan terbitkan Verifiable Credentials.</p>
+          <Link href="/dev-auth?role=validator" className={styles.actionCard}>
+            <span className={styles.cardButton}>Login sebagai Validator</span>
+          </Link>
+          
+          {/* Tombol yang mengarah ke halaman otentikasi developer untuk peran Verifier */}
+            <h3 className={styles.cardTitle}>Masuk sebagai Verifier</h3>
+            <p className={styles.cardDescription}>Akses bukti kredensial yang telah divalidasi.</p>
+          <Link href="/dev-auth?role=verifier" className={styles.actionCard}>
+            <span className={styles.cardButton}>Login sebagai Verifier</span>
+          </Link>
+        </div>
+      </section>
 
       {/* Bagian Layanan Validator */}
       <section className={styles.section}>
@@ -196,6 +212,7 @@ export default function DashboardPage() {
               onChange={(e) => setAccessPassword(e.target.value)}
               className={styles.modalInput}
               placeholder="Kata Sandi"
+              required
             />
             {accessError && <p className={styles.modalError}>{accessError}</p>}
             <div className={styles.modalActions}>

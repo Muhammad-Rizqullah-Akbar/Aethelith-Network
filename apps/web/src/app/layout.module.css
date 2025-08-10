@@ -1,0 +1,71 @@
+/* apps/web/src/app/layout.module.css */
+
+.bodyContainer {
+  display: flex;
+  min-height: 100vh;
+}
+
+.mainContent {
+  flex-grow: 1;
+  transition: margin-left var(--transition-duration) ease;
+  margin-left: 18rem;
+}
+
+.mainContentCollapsed {
+  margin-left: 5rem;
+}
+
+.mainContentInner {
+  /* Memberikan padding yang nyaman untuk konten di dalam dashboard */
+  padding: 3rem;
+  max-width: 80rem;
+  margin: 0 auto;
+}
+
+.mainContentFull {
+  /* Styling untuk halaman yang tidak menggunakan sidebar */
+  padding: 3rem;
+  max-width: 80rem;
+  margin: 0 auto;
+  min-height: 100vh;
+}
+
+/* Tombol hamburger/close untuk mobile */
+.mobileMenuButton {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  background: var(--secondary-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  color: var(--text-primary);
+  font-size: 1.5rem;
+  padding: 0.5rem;
+  cursor: pointer;
+  z-index: 100;
+  display: none;
+}
+
+/*
+ *==========================================================
+ * Media Query untuk Tampilan Mobile
+ *==========================================================
+ */
+@media (max-width: 768px) {
+  .bodyContainer {
+    position: relative;
+  }
+
+  .mainContent {
+    margin-left: 0;
+  }
+
+  .mainContentCollapsed {
+    margin-left: 0;
+  }
+
+  .mobileMenuButton {
+    display: block;
+    z-index: 1000;
+  }
+}
