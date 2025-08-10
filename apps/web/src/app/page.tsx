@@ -6,6 +6,7 @@ import { Navbar } from '../components/layout/navbar';
 import { useEffect, useRef } from 'react';
 import styles from './page.module.css';
 import navbarStyles from '../components/layout/navbar.module.css';
+import { useAuth } from '../components/layout/AuthProvider'; // Impor hook useAuth
 
 const features = [
   {
@@ -27,7 +28,8 @@ const features = [
 
 export default function HomePage() {
   const heroRef = useRef<HTMLDivElement>(null);
-  const navbarRef = useRef<HTMLDivElement>(null); // Perbaikan: Ubah tipe dari HTMLElement ke HTMLDivElement
+  const navbarRef = useRef<HTMLDivElement>(null);
+  const { isConnected } = useAuth(); // Dapatkan status koneksi pengguna
 
   useEffect(() => {
     const handleScroll = () => {
@@ -47,6 +49,9 @@ export default function HomePage() {
     };
   }, []);
 
+  // Tentukan tujuan tombol Get Started
+  const getStartedHref = isConnected ? '/dashboard' : '/register';
+
   return (
     <>
       <div ref={heroRef} className={styles.heroSection}>
@@ -61,11 +66,11 @@ export default function HomePage() {
                   yang melindungi privasi Anda dengan Zero-Knowledge Proof.
                 </p>
                 <div className={styles.heroButtons}>
-                  <Link href="/login" className={styles.primaryButton}>
-                    Login
+                  <Link href={getStartedHref} className={styles.primaryButton}>
+                    Get Started
                   </Link>
-                  <Link href="/register" className={styles.secondaryButton}>
-                    Developers
+                  <Link href="/docs" className={styles.secondaryButton}>
+                    Read Docs
                   </Link>
                 </div>
               </div>
@@ -128,7 +133,7 @@ export default function HomePage() {
           <p className={styles.ctaDescription}>
             Mulai bangun solusi identitas digital Anda dengan Aethelith Network.
           </p>
-          <Link href="/register" className={styles.ctaButton}>
+          <Link href={getStartedHref} className={styles.ctaButton}>
             Mulai Sekarang
           </Link>
         </section>

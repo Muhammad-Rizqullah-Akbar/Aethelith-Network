@@ -44,6 +44,9 @@ html, body {
     color: var(--text-primary);
     transition: background var(--transition-duration) ease;
 }
+.fixed-navbar{
+    position: fixed;
+}
 
 .main-content {
     margin-left: 18rem;
@@ -58,7 +61,6 @@ html, body {
 }
 
 .main-content-inner {
-    padding: 3rem;
     flex-grow: 1;
     padding-top: 5rem;
 }

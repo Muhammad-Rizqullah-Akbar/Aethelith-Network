@@ -1,90 +1,308 @@
 /* apps/web/src/app/dashboard/dashboard.module.css */
 
-.heroSection {
-    text-align: left;
-    margin-bottom: 5rem;
-    padding: 0 2rem;
+.dashboardContainer {
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: 3rem;
+  min-height: 100vh;
 }
 
-.heroTitle {
-    font-size: 3.5rem;
-    font-weight: 900;
-    margin-bottom: 1.5rem;
-    color: var(--text-primary);
-    letter-spacing: -0.05em;
+.dashboardHeader {
+  text-align: left;
+  margin-bottom: 5rem;
 }
 
-.heroDescription {
-    font-size: 1.25rem;
-    color: var(--text-secondary);
-    max-width: 48rem;
-    margin: 0 auto;
-    line-height: 1.75rem;
+.dashboardTitle {
+  font-size: 3.5rem;
+  font-weight: 900;
+  letter-spacing: -0.05em;
+  margin-bottom: 1rem;
 }
 
-.roleCardsSection {
-    max-width: 80rem;
-    margin: 0 auto;
-    padding: 0 2rem;
+.dashboardDescription {
+  font-size: 1.25rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
 }
 
-.roleCardsGrid {
-    display: grid;
-    gap: 2.5rem;
-    grid-template-columns: repeat(auto-fit, minmax(22rem, 1fr));
+.section {
+  margin-bottom: 4rem;
 }
 
-.roleCard {
-    display: flex;
-    flex-direction: column;
-    background-color: var(--secondary-bg);
-    border-radius: var(--border-radius);
-    padding: 2rem;
-    box-shadow: var(--box-shadow);
-    transition: transform var(--transition-duration) ease-in-out, box-shadow var(--transition-duration) ease-in-out;
-    border: 1px solid var(--border-color);
+.sectionTitle {
+  font-size: 2rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--text-primary);
+  border-left: 4px solid var(--accent-color-start);
+  padding-left: 1rem;
+  margin-bottom: 1.5rem;
 }
 
-.roleCard:hover {
-    transform: translateY(-0.5rem);
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+.sectionIcon {
+  font-size: 1.5rem;
+  color: var(--accent-color-start);
 }
 
-.cardIcon {
-    font-size: 3rem;
-    color: var(--accent-color-start);
-    margin-bottom: 1rem;
+.sectionDescription {
+  color: var(--text-secondary);
+  margin-bottom: 2rem;
+}
+
+.cardGrid {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+}
+
+.actionCard {
+  background-color: var(--secondary-bg);
+  padding: 2.5rem;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  border: 1px solid var(--border-color);
+  transition: transform 0.3s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.actionCard:hover {
+  transform: translateY(-5px);
 }
 
 .cardTitle {
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
-    color: var(--text-primary);
+  font-size: 1.5rem;
+  font-weight: 700;
 }
 
 .cardDescription {
-    color: var(--text-secondary);
-    line-height: 1.6rem;
-    margin-bottom: 2rem;
+  font-size: 1rem;
+  color: var(--text-secondary);
 }
 
 .cardButton {
-    background: linear-gradient(to right, var(--accent-color-start), var(--accent-color-end));
-    color: var(--accent-text);
-    padding: 0.8rem 1.5rem;
-    border-radius: var(--border-radius);
-    text-align: center;
-    font-weight: 600;
-    text-decoration: none;
-    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-    border: none;
-    outline: none;
-    cursor: pointer;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(to right, var(--accent-color-start), var(--accent-color-end));
+  color: var(--accent-text);
+  border-radius: var(--border-radius);
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-top: auto;
 }
 
 .cardButton:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* Bagian Mitra */
+.partnersGrid {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+}
+
+.partnerCard {
+  background-color: var(--secondary-bg);
+  padding: 1.5rem;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  border: 1px solid var(--border-color);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  transition: transform 0.2s ease;
+}
+
+.partnerCard:hover {
+  transform: scale(1.05);
+}
+
+.partnerLogo {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+}
+
+.partnerName {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.accessAppButton {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  background-color: var(--primary-bg);
+  color: var(--text-primary);
+  border-radius: 9999px;
+  font-weight: 500;
+  text-decoration: none;
+  border: 1px solid var(--border-color);
+  transition: all 0.2s ease;
+  margin-top: 1rem;
+}
+
+.accessAppButton:hover {
+  background-color: var(--accent-color-start);
+  color: var(--accent-text);
+  border-color: var(--accent-color-start);
+}
+
+/* Bagian Private Data */
+.privateDataCard {
+  background-color: var(--secondary-bg);
+  padding: 2.5rem;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  border: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.dataButton {
+  display: inline-block;
+  width: fit-content;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(to right, var(--accent-color-start), var(--accent-color-end));
+  color: var(--accent-text);
+  border-radius: var(--border-radius);
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.dataButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.dataDisplay {
+  background-color: var(--primary-bg);
+  padding: 1.5rem;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-color);
+  line-height: 1.5;
+}
+
+/* Modal Styling */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.75);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modalContent {
+  background-color: var(--secondary-bg);
+  padding: 2rem;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  width: 90%;
+  max-width: 25rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.modalTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.modalText {
+  color: var(--text-secondary);
+}
+
+.modalInput {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background-color: var(--primary-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  color: var(--text-primary);
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.modalCancelButton {
+  padding: 0.75rem 1.5rem;
+  background-color: var(--border-color);
+  color: var(--text-primary);
+  border-radius: var(--border-radius);
+  border: none;
+  cursor: pointer;
+}
+
+.modalConfirmButton {
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(to right, var(--accent-color-start), var(--accent-color-end));
+  color: var(--accent-text);
+  border-radius: var(--border-radius);
+  border: none;
+  cursor: pointer;
+}
+
+.modalError {
+  color: #EF4444;
+  font-size: 0.875rem;
+}
+
+.loadingSpinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid var(--accent-color-start);
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.validationList {
+  list-style: none;
+  padding: 0;
+  text-align: left;
+  line-height: 1.5;
+  color: var(--text-primary);
+}
+
+.verificationResult {
+  text-align: left;
+  line-height: 1.5;
+  background-color: var(--primary-bg);
+  padding: 1rem;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-color);
 }

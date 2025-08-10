@@ -17,7 +17,7 @@
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  padding-top: 7rem;
+  padding-top: 3.5rem;
 }
 
 .homePageContainer {
@@ -47,13 +47,14 @@
 
 .heroLogo {
   width: 100%;
-  max-width: 25rem;
+  max-width: 38rem;
   height: auto;
 }
 
 @media (max-width: 768px) {
   .heroLogo {
-    display: none; /* Sembunyikan logo di tampilan mobile */
+    display: none;
+    /* Sembunyikan logo di tampilan mobile */
   }
 }
 
@@ -86,10 +87,22 @@
   color: var(--text-primary);
 }
 
+@media (max-width: 768px) {
+  .heroTitle {
+    font-size: 3rem;
+  }
+}
+
 .heroDescription {
   font-size: 1.5rem;
   color: var(--text-primary);
-  line-height: 1;
+  line-height: 1.5;
+}
+
+@media (max-width: 768px) {
+  .heroDescription {
+    font-size: 1rem;
+  }
 }
 
 .heroButtons {
@@ -254,9 +267,11 @@
   .heroTitle {
     font-size: 3rem;
   }
+
   .heroDescription {
     font-size: 1rem;
   }
+
   .mainContent {
     padding: 2rem 1rem;
   }
