@@ -161,8 +161,8 @@ export default function DevRegisterPage() {
                 <textarea id="usagePurpose" value={usagePurpose} onChange={(e) => setUsagePurpose(e.target.value)} className={styles.authInput} rows={5} placeholder="Jelaskan kasus penggunaan Anda (misalnya: menerbitkan ijazah digital)." required />
               </div>
               <div className={styles.inputGroup}>
-                <label htmlFor="expectedVolume">Perkiraan Volume (per bulan)</label>
-                <input type="text" id="expectedVolume" value={expectedVolume} onChange={(e) => setExpectedVolume(e.target.value)} className={styles.authInput} placeholder="Contoh: 1,000 transaksi" required />
+                <label htmlFor="expectedVolume">Perkiraan Volume Autentikasi (per bulan)</label>
+                <input type="text" id="expectedVolume" value={expectedVolume} onChange={(e) => setExpectedVolume(e.target.value)} className={styles.authInput} placeholder="Contoh: 1,000 Autentikasi" required />
               </div>
               <div className={styles.inputGroup}>
                 <label htmlFor="integrationMethod">Metode Integrasi</label>

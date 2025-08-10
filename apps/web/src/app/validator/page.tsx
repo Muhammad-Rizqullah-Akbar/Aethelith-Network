@@ -2,7 +2,7 @@
 'use client';
 
 import { AiOutlineFileAdd, AiOutlineCheckCircle, AiOutlineCloseCircle, AiOutlineLoading } from 'react-icons/ai';
-import dashboardStyles from '@/app/dashboard/dashboard.module.css';
+import dashboardStyles from './validator-page.module.css';
 
 // Komponen Card Statistik
 const StatCard = ({ title, value, icon }: { title: string; value: string; icon: React.ReactNode }) => (
@@ -27,8 +27,7 @@ export default function ValidatorDashboardPage() {
 
   const recentActivities = [
     { type: 'Penerbitan', subject: 'e5a3f12b...', credential: 'KYC Verified', date: '2025-07-28' },
-    { type: 'Pencabutan', subject: 'f8c4d21a...', credential: 'Accredited Investor', date: '2025-07-27' },
-    { type: 'Permintaan', subject: 'a9b1c2d3...', credential: 'Age Verified', date: '2025-07-26' },
+    { type: 'Pencabutan', subject: 'f8c4d21a...', credential: 'Accredited Investor', date: '2025-07-27', reason: 'Kredensial kedaluwarsa' },
   ];
 
   return (
@@ -54,8 +53,11 @@ export default function ValidatorDashboardPage() {
           {recentActivities.map((activity, index) => (
             <li key={index} className={dashboardStyles.activityItem}>
               <span className={dashboardStyles.activityType}>{activity.type}</span>
-              <span className={dashboardStyles.activitySubject}>Pseudonim Subjek: {activity.subject}</span>
+              <span className={dashboardStyles.activitySubject}>Subjek: {activity.subject}</span>
               <span className={dashboardStyles.activityCredential}>Kredensial: {activity.credential}</span>
+              {activity.type === 'Pencabutan' && (
+                <span className={dashboardStyles.activityReason}>Alasan: {activity.reason}</span>
+              )}
               <span className={dashboardStyles.activityDate}>{activity.date}</span>
             </li>
           ))}

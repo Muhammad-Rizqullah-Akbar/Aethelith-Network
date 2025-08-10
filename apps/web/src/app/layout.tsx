@@ -20,10 +20,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const pathname = usePathname();
   const { isConnected } = useAuth();
 
-  const isAuthPage = pathname === '/login' || pathname === '/register' || pathname === '/dev-auth' || pathname === '/dev-register';
+  const isAuthPage = pathname === '/login' || pathname === '/register' || pathname === '/dev-auth' || pathname === '/dev-register' || pathname === '/profile';
   const isHomePage = pathname === '/';
-  
-  const shouldShowDashboardLayout = pathname.startsWith('/dashboard') || pathname.startsWith('/my-vcs') || pathname.startsWith('/issuer');
+
+  const shouldShowDashboardLayout = pathname.startsWith('/dashboard') || pathname.startsWith('/my-vcs') || pathname.startsWith('/issuer') || pathname.startsWith('/profile');
+  const isValidatorPage = pathname.startsWith('/validator') || pathname.startsWith('/verifier'); // Kondisi baru untuk halaman validator
 
   useEffect(() => {
     const checkMobile = () => {
@@ -50,7 +51,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       document.documentElement.setAttribute('data-theme', savedTheme);
     }
   }, []);
-  
+
   useEffect(() => {
     if (isMobile) {
       setIsSidebarCollapsed(true);
@@ -80,8 +81,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Providers>
             <div className={styles.bodyContainer}>
               {isMobile && (
-                <button 
-                  onClick={toggleSidebar} 
+                <button
+                  onClick={toggleSidebar}
                   className={styles.mobileMenuButton}
                   style={{ zIndex: 150 }}
                 >
@@ -89,7 +90,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 </button>
               )}
               <Sidebar isCollapsed={isSidebarCollapsed} onToggleClick={toggleSidebar} />
-              <div 
+              <div
                 className={`${styles.mainContent} ${isSidebarCollapsed ? styles.mainContentCollapsed : ''}`}
               >
                 <main className={styles.mainContentInner}>
@@ -97,6 +98,20 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 </main>
               </div>
             </div>
+          </Providers>
+        </body>
+      </html>
+    );
+  }
+
+  if (isValidatorPage) {
+    return (
+      <html lang="en">
+        <body className={inter.className}>
+          <Providers>
+            <main className={styles.mainContentFull}>
+              {children}
+            </main>
           </Providers>
         </body>
       </html>

@@ -28,10 +28,10 @@ export default function DevAuthPage() {
       
       // Simulasikan berhasil login
       if (activeTab === 'validator') {
-        // window.location.href = '/validator/dashboard';
+        // window.location.href = '/validator';
         console.log('Login berhasil! Mengarahkan ke Dashboard Validator...');
       } else {
-        // window.location.href = '/verifier/dashboard';
+        // window.location.href = '/verifier';
         console.log('Login berhasil! Mengarahkan ke Dashboard Verifier...');
       }
     } else {
