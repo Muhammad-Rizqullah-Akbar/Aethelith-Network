@@ -1,10 +1,10 @@
+// apps/web/src/components/layout/validator-sidebar.tsx
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
-import { AiFillDashboard, AiOutlineUser, AiOutlineRight, AiOutlineLeft, AiOutlineLogout, AiOutlineHome } from 'react-icons/ai';
-import { IoIosDocument } from 'react-icons/io';
-import { useAuth } from '../../components/layout/AuthProvider';
+import { usePathname } from 'next/navigation';
+import { AiOutlineDashboard, AiOutlineFileAdd, AiOutlineHistory, AiOutlineTool, AiOutlineRight, AiOutlineLeft, AiOutlineHome, AiOutlineLogout } from 'react-icons/ai';
+import { useAuth } from './AuthProvider';
 import styles from './sidebar.module.css';
 
 interface NavLinkItem {
@@ -18,32 +18,31 @@ interface SidebarProps {
   onToggleClick: () => void;
 }
 
-export function Sidebar({ isCollapsed, onToggleClick }: SidebarProps) {
+export function ValidatorSidebar({ isCollapsed, onToggleClick }: SidebarProps) {
   const { logout } = useAuth();
+  const pathname = usePathname();
 
   const navItems: NavLinkItem[] = [
-    { name: 'Dashboard', href: '/dashboard', icon: <AiFillDashboard /> },
-    { name: 'My VCs', href: '/my-vcs', icon: <IoIosDocument /> },
-    { name: 'Profile', href: '/profile', icon: <AiOutlineUser /> },
+    { name: 'Dashboard', href: '/validator/dashboard', icon: <AiOutlineDashboard /> },
+    { name: 'Terbitkan Kredensial', href: '/validator/issue-credential', icon: <AiOutlineFileAdd /> },
+    { name: 'Riwayat Penerbitan', href: '/validator/history', icon: <AiOutlineHistory /> },
+    { name: 'Manajemen Template', href: '/validator/templates', icon: <AiOutlineTool /> },
   ];
 
   return (
     <aside className={`${styles.sidebar} ${isCollapsed ? styles.sidebarCollapsed : ''}`}>
       <div className={styles.sidebarHeader}>
-        {/* Tombol toggle sidebar untuk desktop */}
         <button onClick={onToggleClick} className={styles.sidebarToggleButton}>
           {isCollapsed ? <AiOutlineRight /> : <AiOutlineLeft />}
         </button>
       </div>
       <nav className={styles.sidebarNav}>
-        {!isCollapsed && (
-          <Link href="/" className={styles.sidebarLogoLink}>
-            <img src="/Logo.png" alt="Aethelith Network Logo" className={styles.sidebarLogo} />
-          </Link>
-        )}
-
         {navItems.map((item) => (
-          <Link key={item.name} href={item.href} className={styles.sidebarLink}>
+          <Link 
+            key={item.name} 
+            href={item.href} 
+            className={`${styles.sidebarLink} ${pathname.startsWith(item.href) ? styles.active : ''}`}
+          >
             <span className={styles.sidebarIcon}>{item.icon}</span>
             {!isCollapsed && <span>{item.name}</span>}
           </Link>
@@ -51,7 +50,6 @@ export function Sidebar({ isCollapsed, onToggleClick }: SidebarProps) {
       </nav>
       <div className={styles.sidebarFooter}>
         <div className={styles.divider} />
-        {/* Menggunakan class spesifik untuk styling yang berbeda */}
         <Link href="/" className={`${styles.footerLink} ${styles.backToHomeButton}`}>
           <AiOutlineHome className={styles.footerIcon} />
           {!isCollapsed && <span>Back to Home</span>}

@@ -1,0 +1,142 @@
+/* apps/web/src/app/holder/my-vcs/my-vcs.module.css */
+
+/*
+ * ==========================================================
+ * Grid untuk Daftar VCs
+ * ==========================================================
+ */
+.vcGrid {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+}
+
+/*
+ * ==========================================================
+ * Styling Card VC
+ * ==========================================================
+ */
+.vcCard {
+  background-color: var(--secondary-bg);
+  padding: 2.5rem;
+  border-radius: var(--border-radius);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border-color);
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.vcCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.vcHeader {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 1.5rem;
+}
+
+.vcIcon {
+  font-size: 3rem;
+  min-width: 3rem; /* Memastikan ikon tidak menyusut */
+}
+
+.vcInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.vcTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.vcIssuer {
+  font-size: 1rem;
+  color: var(--text-secondary);
+}
+
+.vcDescription {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.vcFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.vcStatus {
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 0.3rem 0.75rem;
+  border-radius: 9999px;
+  text-transform: uppercase;
+}
+
+.vcStatus-active {
+  background-color: rgba(34, 197, 94, 0.1);
+  color: #22C55E;
+}
+
+.vcStatus-revoked {
+  background-color: rgba(252, 211, 77, 0.1);
+  color: #FCD34D;
+}
+
+.vcIssueDate {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+/*
+ * ==========================================================
+ * Media Query untuk Tampilan Mobile
+ * ==========================================================
+ */
+@media (max-width: 768px) {
+  .vcGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .vcCard {
+    padding: 1.5rem;
+    gap: 1rem;
+  }
+
+  .vcHeader {
+    flex-direction: row;
+    align-items: center;
+    padding-bottom: 1rem;
+  }
+
+  .vcIcon {
+    font-size: 2.5rem;
+  }
+
+  .vcTitle {
+    font-size: 1.25rem;
+  }
+
+  .vcDescription {
+    font-size: 0.875rem;
+  }
+
+  .vcFooter {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding-top: 1rem;
+  }
+}

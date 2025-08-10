@@ -1,5 +1,10 @@
 /* apps/web/src/components/layout/sidebar.module.css */
 
+/*
+ *==========================================================
+ * Styling Default (Desktop)
+ *==========================================================
+ */
 .sidebar {
   width: 18rem;
   background-color: var(--secondary-bg);
@@ -53,6 +58,21 @@
   padding-top: 4.5rem;
 }
 
+.sidebarLogoLink {
+  display: block;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.sidebarLogo {
+  width: 5rem;
+  height: auto;
+  position: relative;
+  left: 0;
+  margin-right: 8.5rem;
+  transform: translateY(-55%);
+}
+
 .sidebarLink {
   display: flex;
   align-items: center;
@@ -70,61 +90,6 @@
   border-left-color: var(--accent-color-start);
 }
 
-.dropdownLink {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.8rem 2rem;
-  width: 100%;
-  color: var(--text-secondary);
-  background-color: transparent;
-  border: none;
-  cursor: pointer;
-  text-align: left;
-  transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
-}
-
-.dropdownLink:hover,
-.dropdownLink.dropdownActive {
-  background-color: var(--primary-bg);
-  color: var(--text-primary);
-}
-
-.dropdownLink .flex {
-  display: flex;
-  align-items: center;
-}
-
-.dropdownLink:hover .sidebarIcon,
-.dropdownLink.dropdownActive .sidebarIcon {
-  color: var(--text-primary);
-}
-
-.dropdownArrow {
-  font-size: 1.25rem;
-  transition: transform 0.2s ease-in-out;
-}
-
-.dropdownContainer {
-  display: flex;
-  flex-direction: column;
-  padding-left: 3.5rem;
-  overflow: hidden;
-  animation: slideDown 0.3s ease-out;
-}
-
-.dropdownItem {
-  display: block;
-  padding: 0.5rem 0;
-  color: var(--text-secondary);
-  text-decoration: none;
-  transition: color 0.2s ease-in-out;
-}
-
-.dropdownItem:hover {
-  color: var(--text-primary);
-}
-
 .sidebarIcon {
   font-size: 1.5rem;
   margin-right: 1rem;
@@ -132,16 +97,102 @@
 }
 
 .sidebarLink:hover .sidebarIcon,
-.dropdownLink:hover .sidebarIcon,
-.dropdownLink.dropdownActive .sidebarIcon {
+.sidebarLink.active .sidebarIcon {
   color: var(--text-primary);
 }
 
 .sidebarFooter {
   text-align: center;
-  font-size: 0.75rem;
-  color: var(--text-secondary);
   padding-bottom: 2rem;
+}
+
+.divider {
+  height: 1px;
+  background-color: var(--border-color);
+  margin: 2rem 0; /* Menambahkan margin agar tidak terlalu rapat */
+}
+
+/*
+ * ==========================================================
+ * Styling Tombol Footer yang Elegant dan Modern
+ * ==========================================================
+ */
+
+.footerLink {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* Mengatur teks dan ikon agar rata kiri */
+  gap: 1rem;
+  padding: 0.8rem 2rem;
+  color: var(--text-secondary);
+  text-decoration: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  width: 80%;
+  border-radius: var(--border-radius);
+  transition: all 0.2s ease-in-out;
+}
+
+/* Warna merah yang lebih elegan dan modern untuk tombol logout */
+.logoutButton {
+  background-color: #A32A29; /* Warna merah marun yang lebih gelap */
+  color: #fff;
+  justify-content: center; /* Rata tengah untuk tombol logout */
+  gap: 0.75rem;
+  font-weight: 600;
+  margin-top: 1rem;
+  margin-left: 1.8rem;
+}
+
+/* Efek hover untuk tombol logout */
+.logoutButton:hover {
+  background-color: #8C2524; /* Warna sedikit lebih gelap saat di-hover */
+  box-shadow: 0 4px 8px rgba(163, 42, 41, 0.25); /* Menambahkan bayangan */
+  transform: translateY(-2px);
+}
+
+/* Styling umum untuk ikon di footer */
+.footerIcon {
+  font-size: 1.25rem;
+}
+
+.logoutButton .footerIcon {
+  color: #fff; /* Pastikan ikon di tombol logout berwarna putih */
+}
+
+/* Efek hover untuk tombol Back to Home */
+.backToHomeButton:hover {
+  background-color: var(--primary-bg);
+  color: var(--text-primary);
+}
+
+/*
+ * ==========================================================
+ * Tampilan saat Sidebar Diciutkan (Collapsed)
+ * ==========================================================
+ */
+.sidebarCollapsed .footerLink {
+  justify-content: center; /* Rata tengah saat sidebar diciutkan */
+  padding: 0.8rem 1rem;
+  transition: all 0.2s ease-in-out;
+  width: 80%;
+  transform: translateX(-0.5rem); 
+}
+
+.sidebarCollapsed .footerLink span {
+  display: none; /* Sembunyikan teks saat diciutkan */
+}
+
+.sidebarCollapsed .logoutButton {
+    justify-content: center;
+    background-color: #A32A29;
+    color: #fff;
+    transform: translateX(-1.3rem);
+}
+
+.sidebarCollapsed .logoutButton .footerIcon {
+  color: #fff;
 }
 
 @keyframes slideDown {
@@ -152,5 +203,33 @@
   to {
     transform: translateY(0);
     opacity: 1;
+  }
+}
+
+/*
+ *==========================================================
+ * Media Query untuk Tampilan Mobile
+ *==========================================================
+ */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 18rem;
+    left: 0;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease-in-out;
+    z-index: 100;
+  }
+
+  .sidebar:not(.sidebarCollapsed) {
+    transform: translateX(0);
+  }
+
+  .sidebarCollapsed {
+    transform: translateX(-100%);
+  }
+
+  /* Sembunyikan tombol toggle di dalam sidebar untuk mobile */
+  .sidebarToggleButton {
+    display: none;
   }
 }
