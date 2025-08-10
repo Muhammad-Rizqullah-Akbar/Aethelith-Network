@@ -10,8 +10,8 @@ import {
   onAuthStateChanged,
   signOut,
   getAuth,
-  reauthenticateWithCredential, // Hapus jika tidak digunakan untuk Firebase Auth sensitif lainnya
-  EmailAuthProvider // Hapus jika tidak digunakan
+  // reauthenticateWithCredential, // Dihapus karena tidak digunakan
+  // EmailAuthProvider // Dihapus karena tidak digunakan
 } from 'firebase/auth';
 import { Firestore, getFirestore } from 'firebase/firestore';
 
@@ -101,7 +101,7 @@ export default function DashboardPage() {
   }, []);
 
   const handleAccessData = useCallback(async () => {
-    if (!user) { // Tidak perlu cek user.email dan auth di sini, hanya user itu sendiri
+    if (!user) {
       setAccessError('Tidak ada pengguna yang terautentikasi.');
       setIsLoadingDecryptedData(false);
       return;
@@ -111,13 +111,6 @@ export default function DashboardPage() {
     setIsLoadingDecryptedData(true);
 
     try {
-      // Hapus reauthenticateWithCredential jika tidak ada operasi sensitif Firebase lainnya.
-      // Jika Anda tetap ingin memastikan password benar sebelum dekripsi data lokal,
-      // Anda BISA menggunakan reauthenticateWithCredential, tetapi tidak WAJIB untuk dekripsi.
-      // const credential = EmailAuthProvider.credential(user.email!, accessPassword);
-      // await reauthenticateWithCredential(user, credential);
-      // console.log("User re-authenticated successfully (for Firebase operations if needed).");
-
       // Tidak perlu mendapatkan ID Token lagi. Cukup gunakan accessPassword langsung.
       const dataFromIndexedDB = await getDecryptedUserData(user.uid, accessPassword); // <-- Menggunakan accessPassword
       console.log("Data retrieved and decrypted from IndexedDB:", dataFromIndexedDB);
@@ -143,7 +136,7 @@ export default function DashboardPage() {
     } finally {
       setIsLoadingDecryptedData(false);
     }
-  }, [user, accessPassword]); // Dependensi hanya user dan accessPassword
+  }, [user, accessPassword]);
 
   const handleStartValidation = useCallback(() => {
     setShowValidationModal(true);
@@ -182,7 +175,6 @@ export default function DashboardPage() {
       <header className={styles.dashboardHeader}>
         <h1 className={styles.dashboardTitle}>Dashboard</h1>
         <p className={styles.dashboardDescription}>Pilih layanan yang ingin Anda gunakan.</p>
-        <button onClick={handleLogout} className={styles.logoutButton}>Logout</button>
       </header>
 
       {/* Bagian Login sebagai Developer */}
@@ -192,21 +184,19 @@ export default function DashboardPage() {
         </h2>
         <p className={styles.sectionDescription}>Masuk sebagai Validator atau Verifier untuk mengelola kredensial.</p>
         <div className={styles.cardGrid}>
-          <div className={styles.actionCard}>
-            <h3 className={styles.cardTitle}>Masuk sebagai Validator</h3>
-            <p className={styles.cardDescription}>Verifikasi data dan terbitkan Verifiable Credentials.</p>
-            <Link href="/dev-auth?role=validator" className={styles.cardButton}>
-              Login sebagai Validator
-            </Link>
-          </div>
+          {/* Tombol yang mengarah ke halaman otentikasi developer untuk peran Validator */}
+          <h3 className={styles.cardTitle}>Masuk sebagai Validator</h3>
+          <p className={styles.cardDescription}>Verifikasi data dan terbitkan Verifiable Credentials.</p>
+          <Link href="/dev-auth?role=validator" className={styles.actionCard}>
+            <span className={styles.cardButton}>Login sebagai Validator</span>
+          </Link>
 
-          <div className={styles.actionCard}>
-            <h3 className={styles.cardTitle}>Masuk sebagai Verifier</h3>
-            <p className={styles.cardDescription}>Akses bukti kredensial yang telah divalidasi.</p>
-            <Link href="/dev-auth?role=verifier" className={styles.cardButton}>
-              Login sebagai Verifier
-            </Link>
-          </div>
+          {/* Tombol yang mengarah ke halaman otentikasi developer untuk peran Verifier */}
+          <h3 className={styles.cardTitle}>Masuk sebagai Verifier</h3>
+          <p className={styles.cardDescription}>Akses bukti kredensial yang telah divalidasi.</p>
+          <Link href="/dev-auth?role=verifier" className={styles.actionCard}>
+            <span className={styles.cardButton}>Login sebagai Verifier</span>
+          </Link>
         </div>
       </section>
 
@@ -258,22 +248,20 @@ export default function DashboardPage() {
           <AiOutlineLock className={styles.sectionIcon} /> Private Data Collection
         </h2>
         <p className={styles.sectionDescription}>
-          Data sensitif Anda disimpan di sini. Klik tombol untuk melihatnya.
+          Data sensitif Anda disimpan di sini. Klik tombol untuk melihatnya (demo).
         </p>
         <div className={styles.privateDataCard}>
           <h3 className={styles.cardTitle}>Data Identitas Terenkripsi</h3>
-          <button onClick={handleShowData} className={styles.dataButton} disabled={isLoadingDecryptedData}>
-            {isLoadingDecryptedData ? 'Memuat Data...' : (showSensitiveData ? 'Sembunyikan Data' : 'Tampilkan Data')}
+          <button onClick={handleShowData} className={styles.dataButton}>
+            {showSensitiveData ? 'Sembunyikan Data' : 'Tampilkan Data'}
           </button>
-          {showSensitiveData && decryptedUserData ? (
+          {showSensitiveData && decryptedUserData && (
             <div className={styles.dataDisplay}>
               <p><strong>Nama Lengkap:</strong> {decryptedUserData.fullName}</p>
               <p><strong>NIK:</strong> {decryptedUserData.nik}</p>
               <p><strong>Alamat:</strong> {decryptedUserData.alamat}</p>
               <p><strong>Tanggal Lahir:</strong> {decryptedUserData.tanggalLahir}</p>
             </div>
-          ) : showSensitiveData && !isLoadingDecryptedData && !decryptedUserData && (
-            <p className={styles.dataDisplay}>Data tidak tersedia atau gagal dimuat.</p>
           )}
         </div>
       </section>
@@ -310,14 +298,11 @@ export default function DashboardPage() {
               className={styles.modalInput}
               placeholder="Kata Sandi"
               required
-              disabled={isLoadingDecryptedData}
             />
             {accessError && <p className={styles.modalError}>{accessError}</p>}
             <div className={styles.modalActions}>
-              <button onClick={() => { setShowDataModal(false); setAccessError(''); setAccessPassword(''); }} className={styles.modalCancelButton}>Batal</button>
-              <button onClick={handleAccessData} className={styles.modalConfirmButton} disabled={isLoadingDecryptedData}>
-                {isLoadingDecryptedData ? 'Mengakses...' : 'Akses'}
-              </button>
+              <button onClick={() => setShowDataModal(false)} className={styles.modalCancelButton}>Batal</button>
+              <button onClick={handleAccessData} className={styles.modalConfirmButton}>Akses</button>
             </div>
           </div>
         </div>
@@ -332,21 +317,9 @@ export default function DashboardPage() {
               Layanan Validator akan memeriksa data berikut ini:
             </p>
             <ul className={styles.validationList}>
-              {decryptedUserData ? (
-                <>
-                  <li><strong>Nama Lengkap:</strong> {decryptedUserData.fullName}</li>
-                  <li><strong>NIK:</strong> {decryptedUserData.nik.substring(0, 6) + 'XXXXXXXXXX'}</li>
-                  <li><strong>Alamat:</strong> {decryptedUserData.alamat.substring(0, 10) + '...'}</li>
-                  <li><strong>Tanggal Lahir:</strong> {decryptedUserData.tanggalLahir}</li>
-                </>
-              ) : (
-                <>
-                  {dummyValidationData.map((data, index) => (
-                    <li key={index}><strong>{data.label}:</strong> {data.value}</li>
-                  ))}
-                  <p className={styles.modalTextSmall}><i>(Akses data terenkripsi untuk detail penuh)</i></p>
-                </>
-              )}
+              {dummyValidationData.map((data, index) => (
+                <li key={index}><strong>{data.label}:</strong> {data.value}</li>
+              ))}
             </ul>
             <div className={styles.modalActions}>
               <button onClick={() => setShowValidationModal(false)} className={styles.modalCancelButton}>Batal</button>
