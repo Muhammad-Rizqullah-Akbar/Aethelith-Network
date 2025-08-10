@@ -104,7 +104,7 @@ export default function ValidatorAuditPage() {
     console.log(`Mencabut kredensial ${credentialToRevoke!.id} oleh ${revokerId}. Alasan: ${revokeReason}`);
     
     const updatedCredentials = credentials.map(cred =>
-      cred.id === credentialToRevoke!.id ? { ...cred, status: 'Dicabut', reason: revokeReason } : cred
+      cred.id === credentialToRevoke!.id ? { ...cred, status: 'Dicabut' as const, reason: revokeReason } : cred
     );
     setCredentials(updatedCredentials);
     setIsRevokeModalOpen(false);

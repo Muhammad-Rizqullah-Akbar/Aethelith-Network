@@ -1,9 +1,23 @@
+"use client";
 // lib/indexedDB.ts
-'use client';
 
 const DB_NAME = 'AethelithDB';
 const DB_VERSION = 1;
 const STORE_NAME = 'userData';
+
+// ...existing code...
+
+/**
+ * Fungsi gabungan: Ambil dan dekripsi data sensitif user
+ * Mirip dengan getDecryptedUserData, tapi bisa ditambah logika khusus jika perlu
+ */
+export async function getAndDecryptSensitiveData(
+    uid: string,
+    accessPasswordOrIdToken: string
+): Promise<UserData | null> {
+    return await getDecryptedUserData(uid, accessPasswordOrIdToken);
+}
+// ...existing code...
 
 let db: IDBDatabase | null = null;
 
