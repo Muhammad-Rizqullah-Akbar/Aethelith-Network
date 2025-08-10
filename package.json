@@ -8,6 +8,7 @@
     "lint": "pnpm --filter=\"./**\" lint",
     "test": "pnpm --filter=\"./**\" test"
   },
+    
   "devDependencies": {
     "@babel/core": "^7.28.0",
     "@babel/preset-react": "^7.27.1",
