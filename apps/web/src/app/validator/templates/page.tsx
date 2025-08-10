@@ -50,6 +50,11 @@ export default function ValidatorAuditPage() {
   const [revokeReason, setRevokeReason] = useState('');
   const [revokerId, setRevokerId] = useState('');
   const [revokeError, setRevokeError] = useState('');
+  
+  // State baru untuk modal sukses
+  const [isRevokeSuccessModalOpen, setIsRevokeSuccessModalOpen] = useState(false);
+  const [onChainRecord, setOnChainRecord] = useState<any>(null);
+
 
   const handleManualIssue = (e: React.FormEvent) => {
     e.preventDefault();
@@ -103,6 +108,17 @@ export default function ValidatorAuditPage() {
     );
     setCredentials(updatedCredentials);
     setIsRevokeModalOpen(false);
+
+    // Menyiapkan data untuk modal sukses
+    const newOnChainRecord = {
+      action: "Revoke Credential",
+      credentialId: credentialToRevoke!.id,
+      revokedBy: revokerId,
+      reason: revokeReason,
+      timestamp: new Date().toISOString()
+    };
+    setOnChainRecord(newOnChainRecord);
+    setIsRevokeSuccessModalOpen(true);
   };
   
   const filteredCredentials = credentials.filter(cred => {
@@ -282,6 +298,30 @@ export default function ValidatorAuditPage() {
             <div className={styles.modalActions}>
               <button onClick={() => setIsRevokeModalOpen(false)} className={styles.modalCancelButton}>Batal</button>
               <button onClick={handleConfirmRevoke} className={styles.revokeButton}>Konfirmasi Cabut</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Sukses Pencabutan */}
+      {isRevokeSuccessModalOpen && onChainRecord && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modalContent}>
+            <div className={styles.modalHeader}>
+              <h3 className={styles.modalTitle}>Pencabutan Berhasil!</h3>
+              <button onClick={() => setIsRevokeSuccessModalOpen(false)} className={styles.modalCloseButton}>
+                <AiOutlineClose />
+              </button>
+            </div>
+            <div className={styles.successDetails}>
+              <p>Pencabutan kredensial berhasil dicatat secara on-chain.</p>
+              <div className={styles.onChainRecord}>
+                <p><strong>Aksi:</strong> {onChainRecord.action}</p>
+                <p><strong>ID Kredensial:</strong> {onChainRecord.credentialId}</p>
+                <p><strong>Dicabut Oleh:</strong> {onChainRecord.revokedBy}</p>
+                <p><strong>Alasan:</strong> {onChainRecord.reason}</p>
+                <p><strong>Timestamp:</strong> {new Date(onChainRecord.timestamp).toLocaleString()}</p>
+              </div>
             </div>
           </div>
         </div>
