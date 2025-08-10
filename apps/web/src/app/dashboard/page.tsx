@@ -1,7 +1,8 @@
 'use client';
+
 import Link from 'next/link';
 import { AiOutlineTeam, AiOutlineIdcard, AiOutlineCheckCircle, AiOutlineLock } from 'react-icons/ai';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { FirebaseApp, getApps, getApp } from 'firebase/app';
 import {
   Auth,
@@ -9,27 +10,25 @@ import {
   onAuthStateChanged,
   signOut,
   getAuth,
-  reauthenticateWithCredential,
-  EmailAuthProvider
+  reauthenticateWithCredential, // Hapus jika tidak digunakan untuk Firebase Auth sensitif lainnya
+  EmailAuthProvider // Hapus jika tidak digunakan
 } from 'firebase/auth';
 import { Firestore, getFirestore } from 'firebase/firestore';
 
-// Import the CSS module
 import styles from './dashboard.module.css';
 
-// Import Firebase
 import { initializeApp } from 'firebase/app';
 
-// Declare global variables provided by the environment
+// Import fungsi dari lib/indexedDB
+import { getDecryptedUserData, UserData as DecryptedUserDataInterface } from '../../lib/indexedDB';
+
 declare const __firebase_config: string;
 declare const __app_id: string;
 
-// Global variables for Firebase configuration, provided by the environment
 const firebaseConfig =
   typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
 const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
 
-// Dummy data for demo
 const dummyPartners = [
   { name: 'Bank A', logo: 'https://placehold.co/48x48/0d0e12/ffffff?text=B' },
   { name: 'Exchange B', logo: 'https://placehold.co/48x48/0d0e12/ffffff?text=E' },
@@ -37,22 +36,6 @@ const dummyPartners = [
   { name: 'Pemerintah X', logo: 'https://placehold.co/48x48/0d0e12/ffffff?text=P' }
 ];
 
-interface UserData {
-  fullName: string;
-  nik: string;
-  alamat: string;
-  tanggalLahir: string;
-}
-
-// Dummy decrypted user data
-const dummyDecryptedUserData: UserData = {
-  fullName: 'John Doe',
-  nik: '327311xxxxxxxxxx',
-  alamat: 'Jl. Contoh No. 123, Kota Fiktif',
-  tanggalLahir: '01 Januari 1990'
-};
-
-// Dummy data for validation
 const dummyValidationData = [
   { label: 'NIK', value: 'data terenkripsi' },
   { label: 'Nama Lengkap', value: 'data terenkripsi' },
@@ -73,10 +56,9 @@ export default function DashboardPage() {
   const [showValidationModal, setShowValidationModal] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
   const [showVerificationComplete, setShowVerificationComplete] = useState(false);
-  const [decryptedUserData, setDecryptedUserData] = useState<UserData | null>(null);
+  const [decryptedUserData, setDecryptedUserData] = useState<DecryptedUserDataInterface | null>(null);
   const [isLoadingDecryptedData, setIsLoadingDecryptedData] = useState(false);
 
-  // Initialize Firebase and auth listener
   useEffect(() => {
     try {
       const app =
@@ -104,22 +86,22 @@ export default function DashboardPage() {
     }
   }, []);
 
-  const handleShowData = () => {
+  const handleShowData = useCallback(() => {
     if (showSensitiveData) {
       setShowSensitiveData(false);
       setDecryptedUserData(null);
     } else {
       setShowConsentModal(true);
     }
-  };
+  }, [showSensitiveData]);
 
-  const handleConfirmConsent = () => {
+  const handleConfirmConsent = useCallback(() => {
     setShowConsentModal(false);
     setShowDataModal(true);
-  };
+  }, []);
 
-  const handleAccessData = async () => {
-    if (!user || !user.email) {
+  const handleAccessData = useCallback(async () => {
+    if (!user) { // Tidak perlu cek user.email dan auth di sini, hanya user itu sendiri
       setAccessError('Tidak ada pengguna yang terautentikasi.');
       setIsLoadingDecryptedData(false);
       return;
@@ -129,57 +111,68 @@ export default function DashboardPage() {
     setIsLoadingDecryptedData(true);
 
     try {
-      const credential = EmailAuthProvider.credential(user.email, accessPassword);
-      await reauthenticateWithCredential(user, credential);
+      // Hapus reauthenticateWithCredential jika tidak ada operasi sensitif Firebase lainnya.
+      // Jika Anda tetap ingin memastikan password benar sebelum dekripsi data lokal,
+      // Anda BISA menggunakan reauthenticateWithCredential, tetapi tidak WAJIB untuk dekripsi.
+      // const credential = EmailAuthProvider.credential(user.email!, accessPassword);
+      // await reauthenticateWithCredential(user, credential);
+      // console.log("User re-authenticated successfully (for Firebase operations if needed).");
 
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      // Tidak perlu mendapatkan ID Token lagi. Cukup gunakan accessPassword langsung.
+      const dataFromIndexedDB = await getDecryptedUserData(user.uid, accessPassword); // <-- Menggunakan accessPassword
+      console.log("Data retrieved and decrypted from IndexedDB:", dataFromIndexedDB);
 
-      setDecryptedUserData(dummyDecryptedUserData);
-      setShowSensitiveData(true);
-      setShowDataModal(false);
-      setAccessPassword('');
+      if (dataFromIndexedDB) {
+        setDecryptedUserData(dataFromIndexedDB);
+        setShowSensitiveData(true);
+        setShowDataModal(false);
+        setAccessPassword('');
+      } else {
+        setAccessError('Data pengguna tidak ditemukan di penyimpanan lokal.');
+      }
     } catch (error: any) {
-      console.error('Authentication or decryption failed:', error);
-      if (
-        error.code === 'auth/wrong-password' ||
-        error.code === 'auth/invalid-credential'
-      ) {
-        setAccessError('Kata sandi salah. Akses ditolak.');
+      console.error('Decryption failed:', error);
+      // Lebih spesifik menangani error dekripsi
+      if (error.message.includes('Decryption failed')) {
+        setAccessError('Kata sandi salah atau data rusak. Akses ditolak.');
+      } else if (error.message.includes('Failed to open local database')) {
+        setAccessError('Gagal mengakses penyimpanan lokal.');
       } else {
         setAccessError('Terjadi kesalahan saat mengakses data. Silakan coba lagi.');
       }
     } finally {
       setIsLoadingDecryptedData(false);
     }
-  };
+  }, [user, accessPassword]); // Dependensi hanya user dan accessPassword
 
-  const handleStartValidation = () => {
+  const handleStartValidation = useCallback(() => {
     setShowValidationModal(true);
-  };
+  }, []);
 
-  const handleValidate = async () => {
+  const handleValidate = useCallback(async () => {
     setIsVerifying(true);
     setShowValidationModal(false);
     await new Promise((resolve) => setTimeout(resolve, 3000));
     setIsVerifying(false);
     setShowVerificationComplete(true);
-  };
+  }, []);
 
-  const handleCloseVerificationComplete = () => {
+  const handleCloseVerificationComplete = useCallback(() => {
     setShowVerificationComplete(false);
-  };
+  }, []);
 
-  const handleLogout = () => {
+  const handleLogout = useCallback(() => {
     if (auth) {
       signOut(auth).catch((e) => console.error('Logout failed:', e));
     }
-  };
+  }, [auth]);
 
   if (!isConnected) {
     return (
       <div className={styles.accessDeniedContainer}>
         <h1>Akses Ditolak</h1>
         <p>Anda tidak terhubung. Silakan login untuk melanjutkan.</p>
+        <Link href="/login" className={styles.loginButton}>Login</Link>
       </div>
     );
   }
@@ -189,6 +182,7 @@ export default function DashboardPage() {
       <header className={styles.dashboardHeader}>
         <h1 className={styles.dashboardTitle}>Dashboard</h1>
         <p className={styles.dashboardDescription}>Pilih layanan yang ingin Anda gunakan.</p>
+        <button onClick={handleLogout} className={styles.logoutButton}>Logout</button>
       </header>
 
       {/* Bagian Login sebagai Developer */}
@@ -198,19 +192,21 @@ export default function DashboardPage() {
         </h2>
         <p className={styles.sectionDescription}>Masuk sebagai Validator atau Verifier untuk mengelola kredensial.</p>
         <div className={styles.cardGrid}>
-          {/* Tombol yang mengarah ke halaman otentikasi developer untuk peran Validator */}
-          <h3 className={styles.cardTitle}>Masuk sebagai Validator</h3>
-          <p className={styles.cardDescription}>Verifikasi data dan terbitkan Verifiable Credentials.</p>
-          <Link href="/dev-auth?role=validator" className={styles.actionCard}>
-            <span className={styles.cardButton}>Login sebagai Validator</span>
-          </Link>
+          <div className={styles.actionCard}>
+            <h3 className={styles.cardTitle}>Masuk sebagai Validator</h3>
+            <p className={styles.cardDescription}>Verifikasi data dan terbitkan Verifiable Credentials.</p>
+            <Link href="/dev-auth?role=validator" className={styles.cardButton}>
+              Login sebagai Validator
+            </Link>
+          </div>
 
-          {/* Tombol yang mengarah ke halaman otentikasi developer untuk peran Verifier */}
-          <h3 className={styles.cardTitle}>Masuk sebagai Verifier</h3>
-          <p className={styles.cardDescription}>Akses bukti kredensial yang telah divalidasi.</p>
-          <Link href="/dev-auth?role=verifier" className={styles.actionCard}>
-            <span className={styles.cardButton}>Login sebagai Verifier</span>
-          </Link>
+          <div className={styles.actionCard}>
+            <h3 className={styles.cardTitle}>Masuk sebagai Verifier</h3>
+            <p className={styles.cardDescription}>Akses bukti kredensial yang telah divalidasi.</p>
+            <Link href="/dev-auth?role=verifier" className={styles.cardButton}>
+              Login sebagai Verifier
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -262,20 +258,22 @@ export default function DashboardPage() {
           <AiOutlineLock className={styles.sectionIcon} /> Private Data Collection
         </h2>
         <p className={styles.sectionDescription}>
-          Data sensitif Anda disimpan di sini. Klik tombol untuk melihatnya (demo).
+          Data sensitif Anda disimpan di sini. Klik tombol untuk melihatnya.
         </p>
         <div className={styles.privateDataCard}>
           <h3 className={styles.cardTitle}>Data Identitas Terenkripsi</h3>
-          <button onClick={handleShowData} className={styles.dataButton}>
-            {showSensitiveData ? 'Sembunyikan Data' : 'Tampilkan Data'}
+          <button onClick={handleShowData} className={styles.dataButton} disabled={isLoadingDecryptedData}>
+            {isLoadingDecryptedData ? 'Memuat Data...' : (showSensitiveData ? 'Sembunyikan Data' : 'Tampilkan Data')}
           </button>
-          {showSensitiveData && decryptedUserData && (
+          {showSensitiveData && decryptedUserData ? (
             <div className={styles.dataDisplay}>
               <p><strong>Nama Lengkap:</strong> {decryptedUserData.fullName}</p>
               <p><strong>NIK:</strong> {decryptedUserData.nik}</p>
               <p><strong>Alamat:</strong> {decryptedUserData.alamat}</p>
               <p><strong>Tanggal Lahir:</strong> {decryptedUserData.tanggalLahir}</p>
             </div>
+          ) : showSensitiveData && !isLoadingDecryptedData && !decryptedUserData && (
+            <p className={styles.dataDisplay}>Data tidak tersedia atau gagal dimuat.</p>
           )}
         </div>
       </section>
@@ -312,11 +310,14 @@ export default function DashboardPage() {
               className={styles.modalInput}
               placeholder="Kata Sandi"
               required
+              disabled={isLoadingDecryptedData}
             />
             {accessError && <p className={styles.modalError}>{accessError}</p>}
             <div className={styles.modalActions}>
-              <button onClick={() => setShowDataModal(false)} className={styles.modalCancelButton}>Batal</button>
-              <button onClick={handleAccessData} className={styles.modalConfirmButton}>Akses</button>
+              <button onClick={() => { setShowDataModal(false); setAccessError(''); setAccessPassword(''); }} className={styles.modalCancelButton}>Batal</button>
+              <button onClick={handleAccessData} className={styles.modalConfirmButton} disabled={isLoadingDecryptedData}>
+                {isLoadingDecryptedData ? 'Mengakses...' : 'Akses'}
+              </button>
             </div>
           </div>
         </div>
@@ -331,9 +332,21 @@ export default function DashboardPage() {
               Layanan Validator akan memeriksa data berikut ini:
             </p>
             <ul className={styles.validationList}>
-              {dummyValidationData.map((data, index) => (
-                <li key={index}><strong>{data.label}:</strong> {data.value}</li>
-              ))}
+              {decryptedUserData ? (
+                <>
+                  <li><strong>Nama Lengkap:</strong> {decryptedUserData.fullName}</li>
+                  <li><strong>NIK:</strong> {decryptedUserData.nik.substring(0, 6) + 'XXXXXXXXXX'}</li>
+                  <li><strong>Alamat:</strong> {decryptedUserData.alamat.substring(0, 10) + '...'}</li>
+                  <li><strong>Tanggal Lahir:</strong> {decryptedUserData.tanggalLahir}</li>
+                </>
+              ) : (
+                <>
+                  {dummyValidationData.map((data, index) => (
+                    <li key={index}><strong>{data.label}:</strong> {data.value}</li>
+                  ))}
+                  <p className={styles.modalTextSmall}><i>(Akses data terenkripsi untuk detail penuh)</i></p>
+                </>
+              )}
             </ul>
             <div className={styles.modalActions}>
               <button onClick={() => setShowValidationModal(false)} className={styles.modalCancelButton}>Batal</button>

@@ -1,60 +1,79 @@
 // hooks/useAuthLogic.ts
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword, getIdToken } from 'firebase/auth';
+import {
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  User,
+} from 'firebase/auth';
 import { auth } from '../../lib/firebase';
 import { encryptAndStoreData } from '../../lib/indexedDB';
 
+// Definisi interface untuk data pengguna yang akan disimpan
+interface UserDataToStore {
+  name: string;
+  nik: string;
+  alamat: string;
+  tanggalLahir: string;
+}
+
 export function useAuthLogic() {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>('');
   const router = useRouter();
 
-  const handleLogin = async (email: string, password: string) => {
+  const handleLogin = useCallback(async (email: string, password: string): Promise<void> => {
     setLoading(true);
     setError('');
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      // Redirect ke dashboard setelah login sukses
+      console.log('Login successful, redirecting to dashboard...');
       router.push('/dashboard');
     } catch (err: any) {
-      setError(err.message);
+      console.error('Login error:', err);
+      setError(err.message || 'An unknown login error occurred.');
     } finally {
       setLoading(false);
     }
-  };
+  }, [router]);
 
-  const handleRegister = async (email: string, password: string, name: string, nik: string, alamat: string, tanggalLahir: string) => {
+  const handleRegister = useCallback(async (
+    email: string,
+    password: string,
+    userData: UserDataToStore // Menerima objek userData
+  ): Promise<void> => {
     setLoading(true);
     setError('');
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
+      const user: User = userCredential.user;
 
-      // Dapatkan ID Token pengguna
-      const idToken = await getIdToken(user);
+      await encryptAndStoreData(
+        user.uid,
+        password, // <-- Menggunakan password sebagai keyMaterial
+        userData.name,
+        userData.nik,
+        userData.alamat,
+        userData.tanggalLahir
+      );
+      console.log('User data successfully stored in IndexedDB with password-derived key.');
 
-      // Gunakan ID Token sebagai keyMaterial untuk enkripsi
-      await encryptAndStoreData(user.uid, idToken, name, nik, alamat, tanggalLahir);
-
-      // PERUBAHAN UTAMA DI SINI:
-      // Arahkan ke halaman login setelah pendaftaran sukses
-      // Tambahkan query parameter 'registered=true' untuk notifikasi
-      router.push('/login?registered=true'); // 👈 Modifikasi ini
+      router.push('/login?registered=true');
     } catch (err: any) {
-      setError(err.message);
+      console.error('Registration error:', err);
+      setError(err.message || 'An unknown registration error occurred.');
     } finally {
       setLoading(false);
     }
-  };
+  }, [router]);
 
   return {
     loading,
     error,
     handleLogin,
-    handleRegister,
+    handleRegister, // <--- KEMBALIKAN KE handleRegister
     setError,
   };
 }

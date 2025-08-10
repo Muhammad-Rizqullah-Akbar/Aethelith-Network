@@ -1,3 +1,189 @@
+'use client';
+import Link from 'next/link';
+import { AiOutlineTeam, AiOutlineIdcard, AiOutlineCheckCircle, AiOutlineLock } from 'react-icons/ai';
+import { useState, useEffect } from 'react';
+import { FirebaseApp, getApps, getApp } from 'firebase/app';
+import {
+  Auth,
+  User,
+  onAuthStateChanged,
+  signOut,
+  getAuth,
+  reauthenticateWithCredential,
+  EmailAuthProvider
+} from 'firebase/auth';
+import { Firestore, getFirestore } from 'firebase/firestore';
+
+// Import the CSS module
+import styles from './dashboard.module.css';
+
+// Import Firebase
+import { initializeApp } from 'firebase/app';
+
+// Declare global variables provided by the environment
+declare const __firebase_config: string;
+declare const __app_id: string;
+
+// Global variables for Firebase configuration, provided by the environment
+const firebaseConfig =
+  typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+// Dummy data for demo
+const dummyPartners = [
+  { name: 'Bank A', logo: 'https://placehold.co/48x48/0d0e12/ffffff?text=B' },
+  { name: 'Exchange B', logo: 'https://placehold.co/48x48/0d0e12/ffffff?text=E' },
+  { name: 'E-commerce C', logo: 'https://placehold.co/48x48/0d0e12/ffffff?text=C' },
+  { name: 'Pemerintah X', logo: 'https://placehold.co/48x48/0d0e12/ffffff?text=P' }
+];
+
+interface UserData {
+  fullName: string;
+  nik: string;
+  alamat: string;
+  tanggalLahir: string;
+}
+
+// Dummy decrypted user data
+const dummyDecryptedUserData: UserData = {
+  fullName: 'John Doe',
+  nik: '327311xxxxxxxxxx',
+  alamat: 'Jl. Contoh No. 123, Kota Fiktif',
+  tanggalLahir: '01 Januari 1990'
+};
+
+// Dummy data for validation
+const dummyValidationData = [
+  { label: 'NIK', value: 'data terenkripsi' },
+  { label: 'Nama Lengkap', value: 'data terenkripsi' },
+  { label: 'Tanggal Lahir', value: 'data terenkripsi' }
+];
+
+export default function DashboardPage() {
+  const [auth, setAuth] = useState<Auth | null>(null);
+  const [db, setDb] = useState<Firestore | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [isConnected, setIsConnected] = useState(false);
+
+  const [showSensitiveData, setShowSensitiveData] = useState(false);
+  const [showConsentModal, setShowConsentModal] = useState(false);
+  const [showDataModal, setShowDataModal] = useState(false);
+  const [accessPassword, setAccessPassword] = useState('');
+  const [accessError, setAccessError] = useState('');
+  const [showValidationModal, setShowValidationModal] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [showVerificationComplete, setShowVerificationComplete] = useState(false);
+  const [decryptedUserData, setDecryptedUserData] = useState<UserData | null>(null);
+  const [isLoadingDecryptedData, setIsLoadingDecryptedData] = useState(false);
+
+  // Initialize Firebase and auth listener
+  useEffect(() => {
+    try {
+      const app =
+        getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+      const authInstance = getAuth(app);
+      const dbInstance = getFirestore(app);
+
+      setAuth(authInstance);
+      setDb(dbInstance);
+
+      const unsubscribe = onAuthStateChanged(authInstance, (currentUser) => {
+        if (currentUser) {
+          setUser(currentUser);
+          setIsConnected(true);
+        } else {
+          setUser(null);
+          setIsConnected(false);
+        }
+      });
+
+      return () => unsubscribe();
+    } catch (e) {
+      console.error('Firebase initialization failed:', e);
+      setIsConnected(false);
+    }
+  }, []);
+
+  const handleShowData = () => {
+    if (showSensitiveData) {
+      setShowSensitiveData(false);
+      setDecryptedUserData(null);
+    } else {
+      setShowConsentModal(true);
+    }
+  };
+
+  const handleConfirmConsent = () => {
+    setShowConsentModal(false);
+    setShowDataModal(true);
+  };
+
+  const handleAccessData = async () => {
+    if (!user || !user.email) {
+      setAccessError('Tidak ada pengguna yang terautentikasi.');
+      setIsLoadingDecryptedData(false);
+      return;
+    }
+
+    setAccessError('');
+    setIsLoadingDecryptedData(true);
+
+    try {
+      const credential = EmailAuthProvider.credential(user.email, accessPassword);
+      await reauthenticateWithCredential(user, credential);
+
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+
+      setDecryptedUserData(dummyDecryptedUserData);
+      setShowSensitiveData(true);
+      setShowDataModal(false);
+      setAccessPassword('');
+    } catch (error: any) {
+      console.error('Authentication or decryption failed:', error);
+      if (
+        error.code === 'auth/wrong-password' ||
+        error.code === 'auth/invalid-credential'
+      ) {
+        setAccessError('Kata sandi salah. Akses ditolak.');
+      } else {
+        setAccessError('Terjadi kesalahan saat mengakses data. Silakan coba lagi.');
+      }
+    } finally {
+      setIsLoadingDecryptedData(false);
+    }
+  };
+
+  const handleStartValidation = () => {
+    setShowValidationModal(true);
+  };
+
+  const handleValidate = async () => {
+    setIsVerifying(true);
+    setShowValidationModal(false);
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+    setIsVerifying(false);
+    setShowVerificationComplete(true);
+  };
+
+  const handleCloseVerificationComplete = () => {
+    setShowVerificationComplete(false);
+  };
+
+  const handleLogout = () => {
+    if (auth) {
+      signOut(auth).catch((e) => console.error('Logout failed:', e));
+    }
+  };
+
+  if (!isConnected) {
+    return (
+      <div className={styles.accessDeniedContainer}>
+        <h1>Akses Ditolak</h1>
+        <p>Anda tidak terhubung. Silakan login untuk melanjutkan.</p>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.dashboardContainer}>
       <header className={styles.dashboardHeader}>
@@ -83,12 +269,12 @@
           <button onClick={handleShowData} className={styles.dataButton}>
             {showSensitiveData ? 'Sembunyikan Data' : 'Tampilkan Data'}
           </button>
-          {showSensitiveData && (
+          {showSensitiveData && decryptedUserData && (
             <div className={styles.dataDisplay}>
-              <p><strong>Nama Lengkap:</strong> {dummyUserData.fullName}</p>
-              <p><strong>NIK:</strong> {dummyUserData.nik}</p>
-              <p><strong>Alamat:</strong> {dummyUserData.alamat}</p>
-              <p><strong>Tanggal Lahir:</strong> {dummyUserData.tanggalLahir}</p>
+              <p><strong>Nama Lengkap:</strong> {decryptedUserData.fullName}</p>
+              <p><strong>NIK:</strong> {decryptedUserData.nik}</p>
+              <p><strong>Alamat:</strong> {decryptedUserData.alamat}</p>
+              <p><strong>Tanggal Lahir:</strong> {decryptedUserData.tanggalLahir}</p>
             </div>
           )}
         </div>
@@ -190,3 +376,4 @@
       )}
     </div>
   );
+}

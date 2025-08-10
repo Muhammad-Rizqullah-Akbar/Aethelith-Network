@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation'; // Import useSearchParams
+import { useRouter, useSearchParams } from 'next/navigation';
 import { AiOutlineUser, AiOutlineLock, AiOutlineMail } from 'react-icons/ai';
 import { IoIosCalendar } from "react-icons/io";
 import { HiOutlineIdentification, HiOutlineMapPin } from "react-icons/hi2";
@@ -21,25 +21,23 @@ export default function AuthLayout({ type }: AuthLayoutProps) {
   const [nik, setNik] = useState('');
   const [alamat, setAlamat] = useState('');
   const [tanggalLahir, setTanggalLahir] = useState('');
-  const [showSuccessMessage, setShowSuccessMessage] = useState(false); // State untuk notifikasi
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
   const { loading, error, handleLogin, handleRegister, setError } = useAuthLogic();
   const isLogin = type === 'login';
 
-  const searchParams = useSearchParams(); // Dapatkan search params
-  const router = useRouter(); // Dapatkan router untuk manipulasi URL
+  const searchParams = useSearchParams();
+  const router = useRouter();
 
-  // Efek untuk mengecek query param 'registered' saat komponen mount atau searchParams berubah
+  // Effect untuk mengecek query param 'registered' saat komponen mount atau searchParams berubah
   useEffect(() => {
-    if (isLogin) { // Hanya cek di halaman login
+    if (isLogin) {
       const registered = searchParams.get('registered');
       if (registered === 'true') {
         setShowSuccessMessage(true);
-        // Opsional: Hapus query param setelah ditampilkan
-        // Ini akan membersihkan URL tanpa reload halaman
         const newSearchParams = new URLSearchParams(searchParams.toString());
         newSearchParams.delete('registered');
-        router.replace(`/login?${newSearchParams.toString()}`, { scroll: false }); // Gunakan replace agar tidak menambah history
+        router.replace(`/login?${newSearchParams.toString()}`, { scroll: false });
       }
     }
   }, [isLogin, searchParams, router]);
@@ -47,14 +45,19 @@ export default function AuthLayout({ type }: AuthLayoutProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    setShowSuccessMessage(false); // Reset notifikasi saat submit
+    setShowSuccessMessage(false);
 
     if (isLogin) {
-      handleLogin(email, password);
+      await handleLogin(email, password); // Pastikan handleLogin juga await
     } else {
-      // Panggil handleRegister dan biarkan hook menangani redirect
-      await handleRegister(email, password, name, nik, alamat, tanggalLahir);
-      // Notifikasi akan ditangani oleh redirect dengan query param di useEffect halaman login
+      // Konsolidasi data pengguna ke dalam satu objek sebelum dikirim ke hook
+      const userData = {
+        name: name,
+        nik: nik,
+        alamat: alamat,
+        tanggalLahir: tanggalLahir,
+      };
+      await handleRegister(email, password, userData);
     }
   };
 
@@ -72,7 +75,7 @@ export default function AuthLayout({ type }: AuthLayoutProps) {
         </p>
         {/* Notifikasi Sukses */}
         {showSuccessMessage && isLogin && (
-          <div className={styles.successMessage}> {/* Anda perlu mendefinisikan styles.successMessage di CSS Anda */}
+          <div className={styles.successMessage}>
             Akun Anda berhasil didaftarkan! Silakan masuk. 🎉
           </div>
         )}

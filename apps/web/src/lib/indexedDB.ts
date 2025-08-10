@@ -1,280 +1,349 @@
 // lib/indexedDB.ts
 'use client';
 
-// Nama dan versi database IndexedDB.
 const DB_NAME = 'AethelithDB';
 const DB_VERSION = 1;
-// Nama object store di dalam database.
 const STORE_NAME = 'userData';
 
-// Variabel global untuk menyimpan instance database agar tidak perlu membuka koneksi berulang kali.
 let db: IDBDatabase | null = null;
 
-// Tipe data untuk objek yang akan disimpan di IndexedDB.
-// NOTE: gunakan ArrayBuffer untuk field binary yang disimpan agar tidak terjadi ambiguitas generic di TS.
-interface StoredUserData {
+// Fungsi helper untuk mengkonversi ArrayBuffer ke Base64 (untuk tujuan logging/debugging)
+function arrayBufferToBase64(buffer: ArrayBuffer): string {
+    const binary = String.fromCharCode(...new Uint8Array(buffer));
+    return btoa(binary);
+}
+
+// Interface tipe data yang disimpan di IndexedDB
+export interface StoredUserData {
     uid: string;
     fullName: string;
+    // Data terenkripsi dan IV masing-masing
     encryptedNik: ArrayBuffer;
-    ivNik: ArrayBuffer;                 // <-- ArrayBuffer (bukan Uint8Array)
+    ivNik: ArrayBuffer;
     encryptedAlamat: ArrayBuffer;
     ivAlamat: ArrayBuffer;
     encryptedTanggalLahir: ArrayBuffer;
     ivTanggalLahir: ArrayBuffer;
+    // Salt unik per pengguna untuk derivasi kunci utama
+    keyDerivationSalt: ArrayBuffer; // <--- PENTING: Salt untuk derivasi kunci
     timestamp: string;
 }
 
+// Interface tipe data yang sudah didekripsi
+export interface UserData {
+    fullName: string;
+    nik: string;
+    alamat: string;
+    tanggalLahir: string;
+}
+
 /**
- * Membuka koneksi ke IndexedDB dan membuat object store jika belum ada.
- * Menggunakan singleton pattern untuk menghindari koneksi ganda.
- * @returns {Promise<IDBDatabase>} Instance database IndexedDB.
+ * Membuka koneksi ke IndexedDB. Menggunakan singleton pattern.
  */
-async function openDb(): Promise<IDBDatabase> {
+export async function openDb(): Promise<IDBDatabase> {
     return new Promise((resolve, reject) => {
-        // Jika koneksi sudah ada, langsung kembalikan.
         if (db) {
+            console.log("Using existing IndexedDB connection.");
             resolve(db);
             return;
         }
 
         const request = indexedDB.open(DB_NAME, DB_VERSION);
 
-        // Handler untuk menangani upgrade database, seperti saat versi berubah.
         request.onupgradeneeded = (event) => {
             const dbInstance = (event.target as IDBOpenDBRequest).result;
-            // Buat object store dengan 'uid' sebagai key path jika belum ada.
             if (!dbInstance.objectStoreNames.contains(STORE_NAME)) {
                 dbInstance.createObjectStore(STORE_NAME, { keyPath: 'uid' });
+                console.log(`IndexedDB object store '${STORE_NAME}' created.`);
             }
         };
 
-        // Handler saat koneksi berhasil dibuka.
         request.onsuccess = (event) => {
             db = (event.target as IDBOpenDBRequest).result;
+            console.log("IndexedDB opened successfully.");
             resolve(db);
         };
 
-        // Handler saat terjadi error pada koneksi.
         request.onerror = (event) => {
-            const requestTarget = event.target as IDBRequest;
-            console.error("IndexedDB error:", requestTarget.error);
-            reject(requestTarget.error);
+            const target = event.target as IDBRequest;
+            console.error("IndexedDB open error:", target.error);
+            reject(target.error);
         };
     });
 }
 
 /**
- * Menurunkan (derive) kunci enkripsi dari material kunci (seperti ID Token) menggunakan PBKDF2.
- * Ini adalah cara yang aman untuk membuat kunci enkripsi yang kuat dari string.
- * @param {string} keyMaterial Material kunci, misalnya ID Token pengguna.
- * @returns {Promise<CryptoKey>} Kunci enkripsi AES-GCM yang siap pakai.
+ * Derive kunci enkripsi AES-GCM dari keyMaterial (misalnya ID Token atau password).
+ * Salt harus unik per pengguna, jadi disediakan sebagai argumen.
+ * Jika tidak ada salt (untuk enkripsi pertama kali), generate yang baru.
  */
-async function deriveEncryptionKey(keyMaterial: string): Promise<CryptoKey> {
+export async function deriveEncryptionKey(keyMaterial: string, salt?: ArrayBuffer): Promise<{ key: CryptoKey; saltUsed: ArrayBuffer }> {
     const enc = new TextEncoder();
-    const keyMaterialBytes = await crypto.subtle.importKey(
-        "raw",
-        enc.encode(keyMaterial),
-        { name: "PBKDF2" },
-        false, // Kunci tidak dapat diekspor
-        ["deriveKey"]
-    );
+    // Gunakan salt yang disediakan atau generate yang baru
+    const currentSalt = salt ? new Uint8Array(salt) : crypto.getRandomValues(new Uint8Array(16)); // 16 bytes = 128 bits
 
-    // Derivasi kunci PBKDF2 menjadi kunci AES-GCM 256-bit.
-    const encryptionKey = await crypto.subtle.deriveKey(
-        {
-            name: "PBKDF2",
-            // Salt unik untuk setiap aplikasi, membantu mencegah serangan rainbow table.
-            salt: enc.encode("aethelith-salt"),
-            iterations: 100000, // Jumlah iterasi yang tinggi untuk kekuatan yang lebih baik.
-            hash: "SHA-256",
-        },
-        keyMaterialBytes,
-        { name: "AES-GCM", length: 256 },
-        false, // Kunci tidak dapat diekspor
-        ["encrypt", "decrypt"]
-    );
+    try {
+        const keyMaterialBytes = await crypto.subtle.importKey(
+            "raw",
+            enc.encode(keyMaterial),
+            { name: "PBKDF2" },
+            false,
+            ["deriveKey"]
+        );
 
-    return encryptionKey;
+        const derivedKey = await crypto.subtle.deriveKey(
+            {
+                name: "PBKDF2",
+                salt: currentSalt,
+                iterations: 100000,
+                hash: "SHA-256",
+            },
+            keyMaterialBytes,
+            { name: "AES-GCM", length: 256 },
+            true, // set to true if you need to export the key (e.g., for testing or transferring), else false
+            ["encrypt", "decrypt"]
+        );
+        console.log("Encryption key derived successfully.");
+        return { key: derivedKey, saltUsed: currentSalt.buffer }; // Kembalikan salt yang digunakan
+    } catch (error) {
+        console.error("Error deriving encryption key:", error);
+        throw new Error(`Failed to derive encryption key. Check key derivation parameters. Original error: ${error instanceof Error ? error.message : String(error)}`);
+    }
 }
 
 /**
- * Mengenkripsi data string menggunakan algoritma AES-GCM.
- * Mengembalikan IV sebagai ArrayBuffer (salinan) agar aman disimpan ke IndexedDB.
- * @param {CryptoKey} key Kunci enkripsi.
- * @param {string} data Data string yang akan dienkripsi.
- * @returns {Promise<{ iv: ArrayBuffer; encryptedData: ArrayBuffer }>} Objek berisi IV dan data terenkripsi.
+ * Enkripsi data string menggunakan AES-GCM dan menghasilkan IV unik.
  */
-async function encryptAES(key: CryptoKey, data: string): Promise<{ iv: ArrayBuffer; encryptedData: ArrayBuffer }> {
-    // Initialization Vector (IV) harus unik untuk setiap enkripsi.
-    const ivUint8 = crypto.getRandomValues(new Uint8Array(12));
+export async function encryptAES(
+    key: CryptoKey,
+    data: string
+): Promise<{ iv: ArrayBuffer; encryptedData: ArrayBuffer }> {
+    const ivUint8 = crypto.getRandomValues(new Uint8Array(12)); // 12 bytes for AES-GCM IV is standard
     const encodedData = new TextEncoder().encode(data);
 
-    const encrypted = await crypto.subtle.encrypt(
-        { name: "AES-GCM", iv: ivUint8 }, // SubtleCrypto menerima Uint8Array (ArrayBufferView)
-        key,
-        encodedData
-    );
+    try {
+        const encrypted = await crypto.subtle.encrypt(
+            { name: "AES-GCM", iv: ivUint8 },
+            key,
+            encodedData
+        );
 
-    // Buat salinan ArrayBuffer yang tepat dari iv agar tidak bergantung pada underlying buffer yang lebih besar.
-    const ivCopy = ivUint8.slice().buffer; // slice() membuat copy Uint8Array sehingga .buffer adalah ArrayBuffer yang tepat untuk ukuran iv
-
-    return {
-        iv: ivCopy,
-        encryptedData: encrypted as ArrayBuffer
-    };
+        return { iv: ivUint8.buffer, encryptedData: encrypted as ArrayBuffer };
+    } catch (error) {
+        console.error("Error during AES encryption:", error);
+        throw new Error(`Failed to encrypt data. Original error: ${error instanceof Error ? error.message : String(error)}`);
+    }
 }
 
 /**
- * Mendekripsi data ArrayBuffer menggunakan algoritma AES-GCM.
- * @param {CryptoKey} key Kunci dekripsi.
- * @param {ArrayBuffer} ivBuffer Initialization Vector (sebagai ArrayBuffer) yang digunakan saat enkripsi.
- * @param {ArrayBuffer} encryptedData Data yang akan didekripsi.
- * @returns {Promise<string>} Data yang telah didekripsi sebagai string.
+ * Dekripsi data terenkripsi menggunakan AES-GCM dengan IV yang diberikan.
  */
-async function decryptAES(key: CryptoKey, ivBuffer: ArrayBuffer, encryptedData: ArrayBuffer): Promise<string> {
-    // Pastikan encryptedData adalah ArrayBuffer
-    const dataToDecrypt = encryptedData instanceof ArrayBuffer ? encryptedData : new Uint8Array(encryptedData).buffer;
+export async function decryptAES(
+    key: CryptoKey,
+    ivBuffer: ArrayBuffer,
+    encryptedData: ArrayBuffer
+): Promise<string> {
+    const ivView = new Uint8Array(ivBuffer); // Ensure IV is a Uint8Array view
+    const dataToDecrypt = encryptedData instanceof ArrayBuffer ? encryptedData : new Uint8Array(encryptedData).buffer; // Safegaurd
 
-    // SubtleCrypto menerima BufferSource; kita bisa pakai Uint8Array view di atas ArrayBuffer yang disimpan.
-    const ivView = new Uint8Array(ivBuffer);
-
-    const decrypted = await crypto.subtle.decrypt(
-        { name: "AES-GCM", iv: ivView },
-        key,
-        dataToDecrypt
-    );
-
-    return new TextDecoder().decode(decrypted);
+    try {
+        const decrypted = await crypto.subtle.decrypt(
+            { name: "AES-GCM", iv: ivView },
+            key,
+            dataToDecrypt
+        );
+        return new TextDecoder().decode(decrypted);
+    } catch (error) {
+        console.error("Error during AES decryption:", error, "Key:", key, "IV:", ivBuffer, "Encrypted Data:", encryptedData);
+        throw new Error(`Decryption failed. This usually means the encryption key (derived from password/token) is incorrect or the data is corrupted. Original error: ${error instanceof Error ? error.message : String(error)}`);
+    }
 }
 
-
 /**
- * Mengenkripsi dan menyimpan data pengguna sensitif ke IndexedDB.
- * Data dienkripsi per-field untuk fleksibilitas.
- * @param {string} uid ID unik pengguna.
- * @param {string} keyMaterial ID Token pengguna.
- * @param {string} fullName Nama lengkap pengguna.
- * @param {string} nik Nomor Induk Kependudukan.
- * @param {string} alamat Alamat pengguna.
- * @param {string} tanggalLahir Tanggal lahir pengguna.
+ * Enkripsi dan simpan data pengguna ke IndexedDB.
  */
 export async function encryptAndStoreData(
     uid: string,
-    keyMaterial: string,
+    userPasswordOrIdToken: string, // Lebih jelas sebagai input key material
     fullName: string,
     nik: string,
     alamat: string,
     tanggalLahir: string
 ): Promise<void> {
     try {
-        const key = await deriveEncryptionKey(keyMaterial);
+        // Derive kunci utama dan dapatkan salt baru (karena ini enkripsi pertama)
+        const { key, saltUsed } = await deriveEncryptionKey(userPasswordOrIdToken);
+        console.log("Starting data encryption for storage...");
 
-        // Enkripsi semua data sensitif secara paralel.
         const [encryptedNik, encryptedAlamat, encryptedTanggalLahir] = await Promise.all([
             encryptAES(key, nik),
             encryptAES(key, alamat),
-            encryptAES(key, tanggalLahir)
+            encryptAES(key, tanggalLahir),
         ]);
 
         const dataToStore: StoredUserData = {
             uid,
             fullName,
             encryptedNik: encryptedNik.encryptedData,
-            ivNik: encryptedNik.iv, // ArrayBuffer
+            ivNik: encryptedNik.iv,
             encryptedAlamat: encryptedAlamat.encryptedData,
             ivAlamat: encryptedAlamat.iv,
             encryptedTanggalLahir: encryptedTanggalLahir.encryptedData,
             ivTanggalLahir: encryptedTanggalLahir.iv,
-            timestamp: new Date().toISOString()
+            keyDerivationSalt: saltUsed, // <--- PENTING: Simpan salt ini!
+            timestamp: new Date().toISOString(),
         };
+
+        // --- Logging tambahan untuk debugging ---
+        console.log("Data to be stored (encrypted parts as Base64 for console view):");
+        console.log("  encryptedNik (Base64):", arrayBufferToBase64(encryptedNik.encryptedData));
+        console.log("  ivNik (Base64):", arrayBufferToBase64(encryptedNik.iv));
+        console.log("  encryptedAlamat (Base64):", arrayBufferToBase64(encryptedAlamat.encryptedData));
+        console.log("  ivAlamat (Base64):", arrayBufferToBase64(encryptedAlamat.iv));
+        console.log("  encryptedTanggalLahir (Base64):", arrayBufferToBase64(encryptedTanggalLahir.encryptedData));
+        console.log("  ivTanggalLahir (Base64):", arrayBufferToBase64(encryptedTanggalLahir.iv));
+        console.log("  keyDerivationSalt (Base64):", arrayBufferToBase64(saltUsed));
+        // --- End Logging ---
 
         const database = await openDb();
 
         return new Promise<void>((resolve, reject) => {
-            const transaction = database.transaction([STORE_NAME], 'readwrite');
+            const transaction = database.transaction([STORE_NAME], "readwrite");
             const store = transaction.objectStore(STORE_NAME);
-
             const request = store.put(dataToStore);
 
             request.onsuccess = () => {
-                console.log('Data successfully put into IndexedDB.');
+                console.log("Data successfully put into IndexedDB for UID:", uid);
                 resolve();
             };
+
             request.onerror = (event) => {
-                console.error('Error putting data into IndexedDB:', (event.target as IDBRequest).error);
-                reject((event.target as IDBRequest).error);
+                const error = (event.target as IDBRequest).error;
+                console.error("Error putting data into IndexedDB for UID:", uid, error);
+                reject(new Error(`Failed to store data in IndexedDB: ${error?.message || 'Unknown error'}`));
             };
 
-            // Tambahkan handler untuk memastikan transaksi selesai atau gagal
             transaction.oncomplete = () => {
-                console.log('IndexedDB transaction completed.');
+                console.log("IndexedDB transaction completed for storing data.");
             };
-            transaction.onerror = (event) => {
-                console.error('IndexedDB transaction error:', (event.target as IDBTransaction).error);
-            };
-            transaction.onabort = () => {
-                console.warn('IndexedDB transaction aborted.');
-            };
-        });
 
+            transaction.onerror = (event) => {
+                const error = (event.target as IDBTransaction).error;
+                console.error("IndexedDB transaction error during store:", error);
+                reject(new Error(`IndexedDB transaction error: ${error?.message || 'Unknown error'}`));
+            };
+
+            transaction.onabort = () => {
+                console.warn("IndexedDB transaction aborted.");
+                reject(new Error("IndexedDB transaction aborted."));
+            }
+        });
     } catch (error) {
-        console.error('Failed to encrypt or store data in IndexedDB:', error);
+        console.error("Failed to encrypt or store data in IndexedDB (outer catch):", error);
         throw error;
     }
 }
 
 /**
- * Mengambil dan mendekripsi data pengguna sensitif dari IndexedDB.
- * @param {string} uid ID unik pengguna.
- * @param {string} keyMaterial ID Token pengguna.
- * @returns {Promise<{ fullName: string; nik: string; alamat: string; tanggalLahir: string; } | null>} Objek data pengguna yang telah didekripsi, atau null jika data tidak ditemukan.
+ * Ambil dan dekripsi data pengguna dari IndexedDB.
  */
-export async function getAndDecryptSensitiveData(uid: string, keyMaterial: string): Promise<{
-    fullName: string;
-    nik: string;
-    alamat: string;
-    tanggalLahir: string;
-} | null> {
+export async function getDecryptedUserData(
+    uid: string,
+    accessPasswordOrIdToken: string // Lebih jelas sebagai input key material
+): Promise<UserData | null> {
+    let database: IDBDatabase;
     try {
-        const database = await openDb();
+        database = await openDb();
+    } catch (openDbError) {
+        console.error('Initial Error opening IndexedDB in getDecryptedUserData:', openDbError);
+        throw new Error(`Failed to open local database. Original error: ${openDbError instanceof Error ? openDbError.message : String(openDbError)}`);
+    }
 
-        const dataToDecrypt = await new Promise<StoredUserData | undefined>((resolve, reject) => {
-            const transaction = database.transaction([STORE_NAME], 'readonly');
-            const store = transaction.objectStore(STORE_NAME);
-            const request = store.get(uid);
+    return await new Promise<UserData | null>((resolve, reject) => {
+        let resolvedOrRejected = false;
 
-            request.onsuccess = (event) => {
-                const result = (event.target as IDBRequest).result;
-                resolve(result);
-            };
-            request.onerror = (event) => {
-                reject((event.target as IDBRequest).error);
-            };
-        });
+        const transaction = database.transaction([STORE_NAME], 'readonly');
+        const store = transaction.objectStore(STORE_NAME);
+        console.log(`Attempting to retrieve record for UID: ${uid} from IndexedDB.`);
+        const request = store.get(uid);
 
-        if (!dataToDecrypt) {
-            console.error('Data pengguna tidak ditemukan di IndexedDB.');
-            return null;
-        }
+        const timeoutId = setTimeout(() => {
+            if (!resolvedOrRejected) {
+                resolvedOrRejected = true;
+                const timeoutError = new Error('IndexedDB request timed out when fetching user data.');
+                console.error(timeoutError);
+                reject(timeoutError);
+            }
+        }, 7000);
 
-        const key = await deriveEncryptionKey(keyMaterial);
-
-        // Dekripsi data secara paralel untuk performa yang lebih baik.
-        const [decryptedNik, decryptedAlamat, decryptedTanggalLahir] = await Promise.all([
-            decryptAES(key, dataToDecrypt.ivNik, dataToDecrypt.encryptedNik),
-            decryptAES(key, dataToDecrypt.ivAlamat, dataToDecrypt.encryptedAlamat),
-            decryptAES(key, dataToDecrypt.ivTanggalLahir, dataToDecrypt.encryptedTanggalLahir)
-        ]);
-
-        return {
-            fullName: dataToDecrypt.fullName,
-            nik: decryptedNik,
-            alamat: decryptedAlamat,
-            tanggalLahir: decryptedTanggalLahir
+        request.onerror = (event) => {
+            if (resolvedOrRejected) return;
+            resolvedOrRejected = true;
+            clearTimeout(timeoutId);
+            const error = (event.target as IDBRequest).error;
+            console.error('IndexedDB get request error for UID:', uid, error);
+            reject(new Error(`IndexedDB read error for user data. Original error: ${error?.message || 'Unknown error'}`));
         };
 
-    } catch (error) {
-        console.error('Gagal mengambil atau mendekripsi data dari IndexedDB:', error);
-        throw error;
-    }
+        request.onsuccess = async (event) => {
+            if (resolvedOrRejected) return;
+            resolvedOrRejected = true;
+            clearTimeout(timeoutId);
+
+            try {
+                const record: StoredUserData | undefined = (event.target as IDBRequest).result;
+
+                if (!record) {
+                    console.warn(`No record found in IndexedDB for uid: ${uid}. Returning null.`);
+                    resolve(null);
+                    return;
+                }
+
+                console.log('Record successfully retrieved from IndexedDB:', record);
+
+                // PENTING: Gunakan salt yang disimpan untuk derivasi kunci
+                const { key } = await deriveEncryptionKey(accessPasswordOrIdToken, record.keyDerivationSalt);
+
+                if (!key) { // Safety check
+                    throw new Error('Derived encryption key is unexpectedly null/undefined after derivation.');
+                }
+                console.log('Attempting to decrypt data with derived key...');
+
+                const [nik, alamat, tanggalLahir] = await Promise.all([
+                    decryptAES(key, record.ivNik, record.encryptedNik),
+                    decryptAES(key, record.ivAlamat, record.encryptedAlamat),
+                    decryptAES(key, record.ivTanggalLahir, record.encryptedTanggalLahir),
+                ]);
+
+                console.log('Data successfully decrypted!');
+                resolve({
+                    fullName: record.fullName,
+                    nik,
+                    alamat,
+                    tanggalLahir,
+                });
+            } catch (decryptionError) {
+                console.error('Error during data decryption (likely incorrect password/token or corrupted data):', decryptionError);
+                // Re-throw specific decryption error
+                reject(decryptionError);
+            }
+        };
+
+        transaction.onerror = (event) => {
+            if (resolvedOrRejected) return;
+            resolvedOrRejected = true;
+            clearTimeout(timeoutId);
+            const error = (event.target as IDBTransaction).error;
+            console.error('IndexedDB transaction error during get:', error);
+            reject(new Error(`IndexedDB transaction error when fetching: ${error?.message || 'Unknown error'}`));
+        };
+
+        transaction.onabort = () => {
+            if (resolvedOrRejected) return;
+            resolvedOrRejected = true;
+            clearTimeout(timeoutId);
+            console.warn("IndexedDB transaction aborted during get.");
+            reject(new Error("IndexedDB transaction aborted when fetching."));
+        }
+    });
 }
