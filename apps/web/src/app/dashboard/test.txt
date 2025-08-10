@@ -1,8 +1,7 @@
 'use client';
-
 import Link from 'next/link';
 import { AiOutlineTeam, AiOutlineIdcard, AiOutlineCheckCircle, AiOutlineLock } from 'react-icons/ai';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { FirebaseApp, getApps, getApp } from 'firebase/app';
 import {
   Auth,
@@ -10,25 +9,27 @@ import {
   onAuthStateChanged,
   signOut,
   getAuth,
-  // reauthenticateWithCredential, // Dihapus karena tidak digunakan
-  // EmailAuthProvider // Dihapus karena tidak digunakan
+  reauthenticateWithCredential,
+  EmailAuthProvider
 } from 'firebase/auth';
 import { Firestore, getFirestore } from 'firebase/firestore';
 
+// Import the CSS module
 import styles from './dashboard.module.css';
 
+// Import Firebase
 import { initializeApp } from 'firebase/app';
 
-// Import fungsi dari lib/indexedDB
-import { getDecryptedUserData, UserData as DecryptedUserDataInterface } from '../../lib/indexedDB';
-
+// Declare global variables provided by the environment
 declare const __firebase_config: string;
 declare const __app_id: string;
 
+// Global variables for Firebase configuration, provided by the environment
 const firebaseConfig =
   typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
 const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
 
+// Dummy data for demo
 const dummyPartners = [
   { name: 'Bank A', logo: 'https://placehold.co/48x48/0d0e12/ffffff?text=B' },
   { name: 'Exchange B', logo: 'https://placehold.co/48x48/0d0e12/ffffff?text=E' },
@@ -36,6 +37,22 @@ const dummyPartners = [
   { name: 'Pemerintah X', logo: 'https://placehold.co/48x48/0d0e12/ffffff?text=P' }
 ];
 
+interface UserData {
+  fullName: string;
+  nik: string;
+  alamat: string;
+  tanggalLahir: string;
+}
+
+// Dummy decrypted user data
+const dummyDecryptedUserData: UserData = {
+  fullName: 'John Doe',
+  nik: '327311xxxxxxxxxx',
+  alamat: 'Jl. Contoh No. 123, Kota Fiktif',
+  tanggalLahir: '01 Januari 1990'
+};
+
+// Dummy data for validation
 const dummyValidationData = [
   { label: 'NIK', value: 'data terenkripsi' },
   { label: 'Nama Lengkap', value: 'data terenkripsi' },
@@ -56,9 +73,10 @@ export default function DashboardPage() {
   const [showValidationModal, setShowValidationModal] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
   const [showVerificationComplete, setShowVerificationComplete] = useState(false);
-  const [decryptedUserData, setDecryptedUserData] = useState<DecryptedUserDataInterface | null>(null);
+  const [decryptedUserData, setDecryptedUserData] = useState<UserData | null>(null);
   const [isLoadingDecryptedData, setIsLoadingDecryptedData] = useState(false);
 
+  // Initialize Firebase and auth listener
   useEffect(() => {
     try {
       const app =
@@ -86,22 +104,22 @@ export default function DashboardPage() {
     }
   }, []);
 
-  const handleShowData = useCallback(() => {
+  const handleShowData = () => {
     if (showSensitiveData) {
       setShowSensitiveData(false);
       setDecryptedUserData(null);
     } else {
       setShowConsentModal(true);
     }
-  }, [showSensitiveData]);
+  };
 
-  const handleConfirmConsent = useCallback(() => {
+  const handleConfirmConsent = () => {
     setShowConsentModal(false);
     setShowDataModal(true);
-  }, []);
+  };
 
-  const handleAccessData = useCallback(async () => {
-    if (!user) {
+  const handleAccessData = async () => {
+    if (!user || !user.email) {
       setAccessError('Tidak ada pengguna yang terautentikasi.');
       setIsLoadingDecryptedData(false);
       return;
@@ -111,61 +129,57 @@ export default function DashboardPage() {
     setIsLoadingDecryptedData(true);
 
     try {
-      // Tidak perlu mendapatkan ID Token lagi. Cukup gunakan accessPassword langsung.
-      const dataFromIndexedDB = await getDecryptedUserData(user.uid, accessPassword); // <-- Menggunakan accessPassword
-      console.log("Data retrieved and decrypted from IndexedDB:", dataFromIndexedDB);
+      const credential = EmailAuthProvider.credential(user.email, accessPassword);
+      await reauthenticateWithCredential(user, credential);
 
-      if (dataFromIndexedDB) {
-        setDecryptedUserData(dataFromIndexedDB);
-        setShowSensitiveData(true);
-        setShowDataModal(false);
-        setAccessPassword('');
-      } else {
-        setAccessError('Data pengguna tidak ditemukan di penyimpanan lokal.');
-      }
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+
+      setDecryptedUserData(dummyDecryptedUserData);
+      setShowSensitiveData(true);
+      setShowDataModal(false);
+      setAccessPassword('');
     } catch (error: any) {
-      console.error('Decryption failed:', error);
-      // Lebih spesifik menangani error dekripsi
-      if (error.message.includes('Decryption failed')) {
-        setAccessError('Kata sandi salah atau data rusak. Akses ditolak.');
-      } else if (error.message.includes('Failed to open local database')) {
-        setAccessError('Gagal mengakses penyimpanan lokal.');
+      console.error('Authentication or decryption failed:', error);
+      if (
+        error.code === 'auth/wrong-password' ||
+        error.code === 'auth/invalid-credential'
+      ) {
+        setAccessError('Kata sandi salah. Akses ditolak.');
       } else {
         setAccessError('Terjadi kesalahan saat mengakses data. Silakan coba lagi.');
       }
     } finally {
       setIsLoadingDecryptedData(false);
     }
-  }, [user, accessPassword]);
+  };
 
-  const handleStartValidation = useCallback(() => {
+  const handleStartValidation = () => {
     setShowValidationModal(true);
-  }, []);
+  };
 
-  const handleValidate = useCallback(async () => {
+  const handleValidate = async () => {
     setIsVerifying(true);
     setShowValidationModal(false);
     await new Promise((resolve) => setTimeout(resolve, 3000));
     setIsVerifying(false);
     setShowVerificationComplete(true);
-  }, []);
+  };
 
-  const handleCloseVerificationComplete = useCallback(() => {
+  const handleCloseVerificationComplete = () => {
     setShowVerificationComplete(false);
-  }, []);
+  };
 
-  const handleLogout = useCallback(() => {
+  const handleLogout = () => {
     if (auth) {
       signOut(auth).catch((e) => console.error('Logout failed:', e));
     }
-  }, [auth]);
+  };
 
   if (!isConnected) {
     return (
       <div className={styles.accessDeniedContainer}>
         <h1>Akses Ditolak</h1>
         <p>Anda tidak terhubung. Silakan login untuk melanjutkan.</p>
-        <Link href="/login" className={styles.loginButton}>Login</Link>
       </div>
     );
   }

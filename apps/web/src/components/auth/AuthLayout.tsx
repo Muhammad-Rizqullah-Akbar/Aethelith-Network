@@ -1,7 +1,9 @@
+// components/AuthLayout.tsx
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { AiOutlineUser, AiOutlineLock, AiOutlineMail } from 'react-icons/ai';
 import { IoIosCalendar } from "react-icons/io";
 import { HiOutlineIdentification, HiOutlineMapPin } from "react-icons/hi2";
@@ -19,17 +21,43 @@ export default function AuthLayout({ type }: AuthLayoutProps) {
   const [nik, setNik] = useState('');
   const [alamat, setAlamat] = useState('');
   const [tanggalLahir, setTanggalLahir] = useState('');
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
   const { loading, error, handleLogin, handleRegister, setError } = useAuthLogic();
   const isLogin = type === 'login';
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  // Effect untuk mengecek query param 'registered' saat komponen mount atau searchParams berubah
+  useEffect(() => {
+    if (isLogin) {
+      const registered = searchParams.get('registered');
+      if (registered === 'true') {
+        setShowSuccessMessage(true);
+        const newSearchParams = new URLSearchParams(searchParams.toString());
+        newSearchParams.delete('registered');
+        router.replace(`/login?${newSearchParams.toString()}`, { scroll: false });
+      }
+    }
+  }, [isLogin, searchParams, router]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setShowSuccessMessage(false);
+
     if (isLogin) {
-      handleLogin(email, password);
+      await handleLogin(email, password); // Pastikan handleLogin juga await
     } else {
-      handleRegister(email, password, name, nik, alamat, tanggalLahir);
+      // Konsolidasi data pengguna ke dalam satu objek sebelum dikirim ke hook
+      const userData = {
+        name: name,
+        nik: nik,
+        alamat: alamat,
+        tanggalLahir: tanggalLahir,
+      };
+      await handleRegister(email, password, userData);
     }
   };
 
@@ -37,18 +65,24 @@ export default function AuthLayout({ type }: AuthLayoutProps) {
     <div className={styles.authContainer}>
       <div className={styles.authCard}>
         <h1 className={styles.authCardTitle}>
-          {isLogin ? 'Selamat Datang ' : 'Bergabunglah dengan Kami'}
+          {isLogin ? 'Selamat Datang' : 'Bergabunglah dengan Kami'}
         </h1>
         <p className={styles.authCardDescription}>
-          {isLogin ? 
-            'Silakan masuk ke akun Anda untuk melanjutkan.' : 
+          {isLogin ?
+            'Silakan masuk ke akun Anda untuk melanjutkan.' :
             'Buat akun baru untuk memulai perjalanan Anda.'
           }
         </p>
+        {/* Notifikasi Sukses */}
+        {showSuccessMessage && isLogin && (
+          <div className={styles.successMessage}>
+            Akun Anda berhasil didaftarkan! Silakan masuk. 🎉
+          </div>
+        )}
         {error && (
-            <div className={styles.errorMessage}>
-                {error}
-            </div>
+          <div className={styles.errorMessage}>
+            {error}
+          </div>
         )}
         <form onSubmit={handleSubmit} className={styles.authForm}>
           {!isLogin && (
