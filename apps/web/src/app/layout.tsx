@@ -18,7 +18,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
   const isAuthPage = pathname === '/login' || pathname === '/register';
   const isHomePage = pathname === '/';
-  const isProfilePage = pathname === '/profile';
+  const shouldShowSidebar = pathname.startsWith('/dashboard') || pathname.startsWith('/issuer') || pathname.startsWith('/holder') || pathname.startsWith('/verifier');
+  const showNavbarOnOtherPages = !isAuthPage && !isHomePage && !shouldShowSidebar;
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme');
@@ -33,8 +34,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     setIsSidebarCollapsed(!isSidebarCollapsed);
   };
 
-  // Tata letak untuk halaman login/register
-  if (isAuthPage) {
+  if (isAuthPage || isHomePage) {
     return (
       <html lang="en">
         <body>
@@ -47,36 +47,34 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </html>
     );
   }
-
-  // Tata letak untuk halaman landing dan profil
-  if (isHomePage || isProfilePage) {
+  
+  if (shouldShowSidebar) {
     return (
       <html lang="en">
         <body>
           <Providers>
-            <main className="main-content main-content-full">
-              {children}
-            </main>
+            <div className="body-container">
+              <Sidebar isCollapsed={isSidebarCollapsed} onToggleClick={toggleSidebar} />
+              <div className={`main-content ${isSidebarCollapsed ? 'main-content-collapsed' : ''}`}>
+                <main className="main-content-inner">
+                  {children}
+                </main>
+              </div>
+            </div>
           </Providers>
         </body>
       </html>
     );
   }
-  
-  // Tata letak untuk semua halaman lain dengan sidebar
+
   return (
     <html lang="en">
       <body>
         <Providers>
-          <div className="body-container">
-            <Sidebar isCollapsed={isSidebarCollapsed} onToggleClick={toggleSidebar} />
-            <div className={`main-content ${isSidebarCollapsed ? 'main-content-collapsed' : ''}`}>
-              <Navbar />
-              <main className="main-content-inner">
-                {children}
-              </main>
-            </div>
-          </div>
+          <main className="main-content main-content-full">
+            <Navbar className="fixed-navbar" />
+            {children}
+          </main>
         </Providers>
       </body>
     </html>

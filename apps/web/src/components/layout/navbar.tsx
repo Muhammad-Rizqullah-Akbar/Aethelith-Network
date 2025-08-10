@@ -2,9 +2,15 @@ import Link from 'next/link';
 import { AuthButtons } from './AuthButtons';
 import styles from './navbar.module.css';
 
-export function Navbar() {
+// Mendefinisikan interface props untuk Navbar
+interface NavbarProps {
+  className?: string;
+}
+
+// Komponen Navbar sekarang menerima `className`
+export function Navbar({ className }: NavbarProps) {
   return (
-    <nav className={styles.navbar}>
+    <nav className={`${styles.navbar} ${className}`}>
       <div className={styles.navbarContainer}>
         <div className={styles.navbarLeft}>
           <Link href="/">
