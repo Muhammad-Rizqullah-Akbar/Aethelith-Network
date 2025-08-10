@@ -5,7 +5,24 @@ import { useState } from 'react';
 import { AiOutlineSearch, AiOutlineFilter, AiOutlineEye, AiOutlineCloseCircle, AiOutlineCheckCircle, AiOutlineClose, AiOutlineTool, AiOutlineIdcard } from 'react-icons/ai';
 import styles from './validator-audit.module.css';
 
-const dummyCredentials = [
+// Mendefinisikan interface yang lebih fleksibel untuk mengatasi error tipe
+interface Credential {
+  id: string;
+  subject: string;
+  type: string;
+  status: 'Aktif' | 'Dicabut' | 'Kedaluwarsa';
+  issuedDate: string;
+  expiryDate: string;
+  reason?: string; // Menjadikan reason opsional
+  data: {
+    name: string;
+    nik?: string; // Menjadikan nik opsional
+    idProfesi?: string; // Menjadikan idProfesi opsional
+    dob?: string; // Menjadikan dob opsional
+  };
+}
+
+const dummyCredentials: Credential[] = [
   { id: 'vc-001', subject: 'sub-a9b1c2d3...', type: 'KYC Verified', status: 'Aktif', issuedDate: '2025-07-20', expiryDate: '2026-07-20', data: { name: 'Budi Santoso', nik: '123456789' } },
   { id: 'vc-002', subject: 'sub-e5a3f12b...', type: 'Sertifikasi Profesi', status: 'Dicabut', issuedDate: '2025-07-18', expiryDate: '2026-07-18', reason: 'Kredensial kedaluwarsa', data: { name: 'Siti Rahayu', idProfesi: '987654321' } },
   { id: 'vc-003', subject: 'sub-f8c4d21a...', type: 'Verifikasi Usia', status: 'Aktif', issuedDate: '2025-07-15', expiryDate: '2027-07-15', data: { name: 'Joko Widodo', dob: '1980-01-01' } },
@@ -14,11 +31,11 @@ const dummyCredentials = [
 ];
 
 export default function ValidatorAuditPage() {
-  const [credentials, setCredentials] = useState(dummyCredentials);
+  const [credentials, setCredentials] = useState<Credential[]>(dummyCredentials);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState('Semua');
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedCredential, setSelectedCredential] = useState<any>(null);
+  const [selectedCredential, setSelectedCredential] = useState<Credential | null>(null);
 
   // State untuk form penerbitan manual
   const [newSubject, setNewSubject] = useState('');
@@ -26,13 +43,20 @@ export default function ValidatorAuditPage() {
   const [newData, setNewData] = useState('');
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const [submissionError, setSubmissionError] = useState('');
+  
+  // State baru untuk modal pencabutan
+  const [isRevokeModalOpen, setIsRevokeModalOpen] = useState(false);
+  const [credentialToRevoke, setCredentialToRevoke] = useState<Credential | null>(null);
+  const [revokeReason, setRevokeReason] = useState('');
+  const [revokerId, setRevokerId] = useState('');
+  const [revokeError, setRevokeError] = useState('');
 
   const handleManualIssue = (e: React.FormEvent) => {
     e.preventDefault();
     setSubmissionError('');
     try {
       const parsedData = JSON.parse(newData);
-      const newCredential = {
+      const newCredential: Credential = {
         id: `vc-${Math.random().toString(36).substr(2, 9)}`,
         subject: newSubject,
         type: newType,
@@ -53,15 +77,34 @@ export default function ValidatorAuditPage() {
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value);
   const handleStatusFilter = (e: React.ChangeEvent<HTMLSelectElement>) => setFilterStatus(e.target.value);
-  const handleViewDetails = (credential: any) => { setSelectedCredential(credential); setIsModalOpen(true); };
-  const handleRevoke = (id: string) => {
+  const handleViewDetails = (credential: Credential) => { setSelectedCredential(credential); setIsModalOpen(true); };
+  
+  // Fungsi baru untuk membuka modal pencabutan
+  const handleOpenRevokeModal = (credential: Credential) => {
+    setCredentialToRevoke(credential);
+    setIsRevokeModalOpen(true);
+    setRevokeReason('');
+    setRevokerId('');
+    setRevokeError('');
+  };
+  
+  // Fungsi untuk memproses pencabutan setelah konfirmasi
+  const handleConfirmRevoke = () => {
+    if (!revokerId || !revokeReason) {
+      setRevokeError('ID Akun dan Alasan pencabutan harus diisi.');
+      return;
+    }
+    
+    // Logika pencabutan di sini, bisa dikirim ke on-chain
+    console.log(`Mencabut kredensial ${credentialToRevoke!.id} oleh ${revokerId}. Alasan: ${revokeReason}`);
+    
     const updatedCredentials = credentials.map(cred =>
-      cred.id === id ? { ...cred, status: 'Dicabut', reason: 'Dicabut oleh validator' } : cred
+      cred.id === credentialToRevoke!.id ? { ...cred, status: 'Dicabut', reason: revokeReason } : cred
     );
     setCredentials(updatedCredentials);
-    setIsModalOpen(false);
+    setIsRevokeModalOpen(false);
   };
-
+  
   const filteredCredentials = credentials.filter(cred => {
     const matchesSearch = cred.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           cred.subject.toLowerCase().includes(searchQuery.toLowerCase());
@@ -90,7 +133,6 @@ export default function ValidatorAuditPage() {
         </p>
       </header>
 
-      {/* --- Bagian Penerbitan Manual --- */}
       <section className={`${styles.section} ${styles.issueSection}`}>
         <h2 className={styles.sectionTitle}>Penerbitan Kredensial Manual</h2>
         <form onSubmit={handleManualIssue} className={styles.issueForm}>
@@ -118,7 +160,6 @@ export default function ValidatorAuditPage() {
         </form>
       </section>
 
-      {/* --- Bagian Riwayat/Audit Kredensial --- */}
       <section className={`${styles.section} ${styles.historySection}`}>
         <h2 className={styles.sectionTitle}>Riwayat & Audit Kredensial</h2>
         <div className={styles.filterBar}>
@@ -165,7 +206,7 @@ export default function ValidatorAuditPage() {
                         <AiOutlineEye /> Detail
                       </button>
                       {cred.status === 'Aktif' && (
-                        <button onClick={() => handleRevoke(cred.id)} className={`${styles.actionButton} ${styles.revokeButton}`}>
+                        <button onClick={() => handleOpenRevokeModal(cred)} className={`${styles.actionButton} ${styles.revokeButton}`}>
                           <AiOutlineCloseCircle /> Cabut
                         </button>
                       )}
@@ -205,6 +246,42 @@ export default function ValidatorAuditPage() {
                 <h4>Data Klaim:</h4>
                 <pre>{JSON.stringify(selectedCredential.data, null, 2)}</pre>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Modal Konfirmasi Pencabutan */}
+      {isRevokeModalOpen && credentialToRevoke && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modalContent}>
+            <div className={styles.modalHeader}>
+              <h3 className={styles.modalTitle}>Konfirmasi Pencabutan Kredensial</h3>
+              <button onClick={() => setIsRevokeModalOpen(false)} className={styles.modalCloseButton}>
+                <AiOutlineClose />
+              </button>
+            </div>
+            <div className={styles.credentialDetails}>
+              <p>Anda akan mencabut kredensial dengan ID:</p>
+              <p className={styles.revokeIdText}><strong>{credentialToRevoke.id}</strong></p>
+              <p>Tindakan ini akan tercatat secara on-chain dan tidak dapat dibatalkan.</p>
+              
+              {revokeError && <p className={styles.errorText}>{revokeError}</p>}
+              
+              <div className={styles.formGroup}>
+                <label htmlFor="revokerId">ID Akun Validator</label>
+                <input type="text" id="revokerId" value={revokerId} onChange={(e) => setRevokerId(e.target.value)} className={styles.formInput} placeholder="Masukkan ID Akun Anda" />
+              </div>
+              
+              <div className={styles.formGroup}>
+                <label htmlFor="revokeReason">Alasan Pencabutan</label>
+                <textarea id="revokeReason" value={revokeReason} onChange={(e) => setRevokeReason(e.target.value)} className={styles.formTextarea} rows={3} placeholder="Masukkan alasan pencabutan (misalnya: 'Kredensial kedaluwarsa')" />
+              </div>
+            </div>
+            
+            <div className={styles.modalActions}>
+              <button onClick={() => setIsRevokeModalOpen(false)} className={styles.modalCancelButton}>Batal</button>
+              <button onClick={handleConfirmRevoke} className={styles.revokeButton}>Konfirmasi Cabut</button>
             </div>
           </div>
         </div>

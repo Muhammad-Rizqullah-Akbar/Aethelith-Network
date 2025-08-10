@@ -1,20 +1,25 @@
 /* apps/web/src/app/validator/integrate/validator-integrate.module.css */
+
 .integratePage {
   display: flex;
   background-color: var(--primary-bg);
   color: var(--text-primary);
-  min-height: calc(100vh - 5rem);
+  min-height: 100vh;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding-top: 5rem;
 }
 
 .docAside {
-  width: 250px;
+  width: 25rem;
   background-color: var(--secondary-bg);
   border-right: 1px solid var(--border-color);
   padding: 2rem 0;
   position: sticky;
-  top: 5rem; /* Menyesuaikan dengan tinggi navbar */
-  height: calc(100vh - 5rem);
+  top: 5rem;
+  height: calc(100vh);
   overflow-y: auto;
+  z-index: 50;
 }
 
 .asideTitle {
@@ -40,23 +45,46 @@
   text-align: left;
   cursor: pointer;
   color: var(--text-secondary);
-  transition: background-color 0.2s ease, color 0.2s ease;
+  transition: all 0.2s ease;
+  border-left: 4px solid transparent;
 }
 
-.asideLink:hover,
-.asideLink.active {
+.asideLink:hover {
   background-color: var(--primary-bg);
   color: var(--text-primary);
+}
+
+/* Memperbaiki gaya untuk tombol aktif */
+.asideLink.active {
+  background: linear-gradient(to right, var(--accent-color-start), var(--accent-color-end));
+  color: var(--accent-text);
+  border-radius: var(--border-radius); /* Tambahkan border-radius */
+  border-left-color: transparent;
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin: 0.25rem 1rem 0.25rem 1rem; /* Tambahkan margin untuk memberikan jarak */
+  width: auto; /* Ubah lebar menjadi auto agar menyesuaikan margin */
+}
+
+/* Memperbarui gaya hover untuk tombol aktif */
+.asideLink.active:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  background: linear-gradient(to right, var(--accent-color-start), var(--accent-color-end));
 }
 
 .asideIcon {
   font-size: 1.25rem;
 }
 
+.asideLink.active .asideIcon,
+.asideLink:hover .asideIcon {
+  color: var(--text-primary);
+}
+
 .docMainContent {
   flex-grow: 1;
   padding: 3rem;
-  max-width: 900px;
 }
 
 .docHeader {
@@ -117,7 +145,8 @@
   white-space: nowrap;
 }
 
-.copyButton {
+.copyButton,
+.visibilityButton {
   margin-left: 1rem;
   padding: 0.5rem 1rem;
   background-color: var(--primary-bg);
@@ -131,7 +160,8 @@
   transition: all 0.2s ease;
 }
 
-.copyButton:hover {
+.copyButton:hover,
+.visibilityButton:hover {
   background-color: var(--border-color);
 }
 
@@ -186,6 +216,8 @@
 @media (max-width: 1024px) {
   .integratePage {
     flex-direction: column;
+    max-width: none;
+    padding-top: 0;
   }
   .docAside {
     width: 100%;
@@ -193,6 +225,7 @@
     height: auto;
     border-right: none;
     border-bottom: 1px solid var(--border-color);
+    top: 0;
   }
   .asideNav {
     flex-direction: row;
@@ -203,8 +236,10 @@
   .asideLink {
     flex-grow: 1;
     justify-content: center;
+    margin: 0.25rem;
   }
   .docMainContent {
     padding: 2rem 1rem;
+    margin-left: 0;
   }
 }

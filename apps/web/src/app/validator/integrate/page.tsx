@@ -1,13 +1,15 @@
 // apps/web/src/app/validator/integrate/page.tsx
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { AiOutlineKey, AiOutlineApi, AiOutlineFileText, AiOutlineCode, AiOutlineCopy, AiOutlineLink, AiOutlineCloseCircle, AiOutlineCheckCircle } from 'react-icons/ai';
+import { AiOutlineKey, AiOutlineApi, AiOutlineFileText, AiOutlineCode, AiOutlineCopy, AiOutlineLink, AiOutlineEye, AiOutlineEyeInvisible, AiOutlineCheckCircle, AiOutlineCloseCircle } from 'react-icons/ai';
 import styles from './validator-integrate.module.css';
 
 // Komponen Navigasi Dokumentasi (Aside)
 const DocAside = () => {
+  const [activeId, setActiveId] = useState('api-key');
+
   const navItems = [
     { name: 'Kunci API', id: 'api-key', icon: <AiOutlineKey /> },
     { name: 'Endpoints API', id: 'api-endpoints', icon: <AiOutlineApi /> },
@@ -17,6 +19,24 @@ const DocAside = () => {
     { name: 'Webhooks', id: 'webhooks', icon: <AiOutlineLink /> },
     { name: 'Contoh Kode', id: 'code-examples', icon: <AiOutlineCode /> },
   ];
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const sections = navItems.map(item => document.getElementById(item.id)).filter(el => el);
+      const currentScrollPos = window.scrollY + 100;
+
+      for (let i = sections.length - 1; i >= 0; i--) {
+        const section = sections[i];
+        if (section && section.offsetTop <= currentScrollPos) {
+          setActiveId(section.id);
+          break;
+        }
+      }
+    };
+    
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [navItems]);
 
   const handleNavClick = (id: string) => {
     const element = document.getElementById(id);
@@ -30,7 +50,11 @@ const DocAside = () => {
       <h2 className={styles.asideTitle}>Integrasi</h2>
       <nav className={styles.asideNav}>
         {navItems.map(item => (
-          <button key={item.id} onClick={() => handleNavClick(item.id)} className={styles.asideLink}>
+          <button 
+            key={item.id} 
+            onClick={() => handleNavClick(item.id)} 
+            className={`${styles.asideLink} ${item.id === activeId ? styles.active : ''}`}
+          >
             <span className={styles.asideIcon}>{item.icon}</span>
             {item.name}
           </button>
@@ -44,11 +68,16 @@ const DocAside = () => {
 export default function ValidatorIntegratePage() {
   const [apiKey, setApiKey] = useState('key-dev-123456-abcde');
   const [isCopied, setIsCopied] = useState(false);
+  const [isKeyVisible, setIsKeyVisible] = useState(false);
 
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text);
     setIsCopied(true);
     setTimeout(() => setIsCopied(false), 2000);
+  };
+  
+  const toggleKeyVisibility = () => {
+    setIsKeyVisible(!isKeyVisible);
   };
 
   return (
@@ -69,10 +98,13 @@ export default function ValidatorIntegratePage() {
           </h2>
           <p>Kunci API ini digunakan untuk mengautentikasi setiap permintaan ke API jaringan. Simpan kunci ini dengan aman dan jangan bagikan kepada pihak yang tidak berwenang.</p>
           <div className={styles.apiKeyDisplay}>
-            <code>{apiKey}</code>
+            <code>{isKeyVisible ? apiKey : '********************************'}</code>
             <button onClick={() => handleCopy(apiKey)} className={styles.copyButton}>
               {isCopied ? 'Tersalin!' : 'Salin'}
               <AiOutlineCopy />
+            </button>
+            <button onClick={toggleKeyVisibility} className={styles.visibilityButton}>
+              {isKeyVisible ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
             </button>
           </div>
           <button className={styles.regenerateButton}>Buat Kunci Baru</button>

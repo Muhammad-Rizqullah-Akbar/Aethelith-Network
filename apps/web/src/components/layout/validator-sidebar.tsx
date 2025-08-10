@@ -1,10 +1,9 @@
-// apps/web/src/components/layout/validator-sidebar.tsx
 'use client';
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { AiOutlineDashboard, AiOutlineFileAdd, AiOutlineHistory, AiOutlineTool, AiOutlineRight, AiOutlineLeft, AiOutlineHome, AiOutlineLogout } from 'react-icons/ai';
-import { useAuth } from './AuthProvider';
+import { AiOutlineDashboard, AiOutlineTool, AiOutlineRight, AiOutlineLeft, AiOutlineHome, AiOutlineLogout, AiOutlineCloudUpload } from 'react-icons/ai';
+import { useAuthDev } from '../../app/dev-auth/AuthProvider-Dev'; // Mengganti hook untuk autentikasi developer
 import styles from './sidebar.module.css';
 
 interface NavLinkItem {
@@ -19,14 +18,13 @@ interface SidebarProps {
 }
 
 export function ValidatorSidebar({ isCollapsed, onToggleClick }: SidebarProps) {
-  const { logout } = useAuth();
+  const { logout } = useAuthDev();
   const pathname = usePathname();
 
   const navItems: NavLinkItem[] = [
-    { name: 'Dashboard', href: '/validator/dashboard', icon: <AiOutlineDashboard /> },
-    { name: 'Terbitkan Kredensial', href: '/validator/issue-credential', icon: <AiOutlineFileAdd /> },
-    { name: 'Riwayat Penerbitan', href: '/validator/history', icon: <AiOutlineHistory /> },
-    { name: 'Manajemen Template', href: '/validator/templates', icon: <AiOutlineTool /> },
+    { name: 'Dashboard', href: '/validator', icon: <AiOutlineDashboard /> },
+    { name: 'Audit Kredensial', href: '/validator/templates', icon: <AiOutlineTool /> },
+    { name: 'Integrasi', href: '/validator/integrate', icon: <AiOutlineCloudUpload /> },
   ];
 
   return (

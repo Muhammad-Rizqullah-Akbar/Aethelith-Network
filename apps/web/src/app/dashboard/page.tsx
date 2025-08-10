@@ -21,6 +21,7 @@ import { initializeApp } from 'firebase/app';
 
 // Import fungsi dari lib/indexedDB
 import { getDecryptedUserData, UserData as DecryptedUserDataInterface } from '../../lib/indexedDB';
+import AccessDenied from 'src/components/throwError/AccessDenied';
 
 declare const __firebase_config: string;
 declare const __app_id: string;
@@ -162,11 +163,7 @@ export default function DashboardPage() {
 
   if (!isConnected) {
     return (
-      <div className={styles.accessDeniedContainer}>
-        <h1>Akses Ditolak</h1>
-        <p>Anda tidak terhubung. Silakan login untuk melanjutkan.</p>
-        <Link href="/login" className={styles.loginButton}>Login</Link>
-      </div>
+      <AccessDenied /> 
     );
   }
 
