@@ -20,7 +20,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const pathname = usePathname();
   const { isConnected } = useAuth();
 
-  const isAuthPage = pathname === '/login' || pathname === '/register' || pathname === '/dev-auth' || pathname === '/dev-register' || pathname === '/profile';
+  const isAuthPage = pathname === '/login' || pathname === '/register' || pathname === '/dev-auth' || pathname === '/dev-register' || pathname === '/profile' || pathname.startsWith('/mitra/app/');
   const isHomePage = pathname === '/';
 
   const shouldShowDashboardLayout = pathname.startsWith('/dashboard') || pathname.startsWith('/my-vcs') || pathname.startsWith('/issuer') || pathname.startsWith('/profile');

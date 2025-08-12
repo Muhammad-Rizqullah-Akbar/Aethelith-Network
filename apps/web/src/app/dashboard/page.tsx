@@ -31,10 +31,10 @@ const firebaseConfig =
 const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
 
 const dummyPartners = [
-  { name: 'Bank A', logo: 'https://placehold.co/48x48/0d0e12/ffffff?text=B' },
-  { name: 'Exchange B', logo: 'https://placehold.co/48x48/0d0e12/ffffff?text=E' },
-  { name: 'E-commerce C', logo: 'https://placehold.co/48x48/0d0e12/ffffff?text=C' },
-  { name: 'Pemerintah X', logo: 'https://placehold.co/48x48/0d0e12/ffffff?text=P' }
+  { name: 'Bank-A', logo: 'https://placehold.co/48x48/0d0e12/ffffff?text=B' },
+  { name: 'Exchange-B', logo: 'https://placehold.co/48x48/0d0e12/ffffff?text=E' },
+  { name: 'E-commerce-C', logo: 'https://placehold.co/48x48/0d0e12/ffffff?text=C' },
+  { name: 'Dukcapil', logo: 'https://placehold.co/48x48/0d0e12/ffffff?text=P' }
 ];
 
 const dummyValidationData = [
@@ -231,7 +231,7 @@ export default function DashboardPage() {
             <div key={index} className={styles.partnerCard}>
               <img src={partner.logo} alt={`${partner.name} logo`} className={styles.partnerLogo} />
               <p className={styles.partnerName}>{partner.name}</p>
-              <Link href={`/mitra/app/${partner.name.toLowerCase().replace(/\s/g, '')}`} className={styles.accessAppButton}>
+              <Link href={`/mitra/app/${partner.name}`} className={styles.accessAppButton} target='_blank'>
                 Akses App
               </Link>
             </div>
