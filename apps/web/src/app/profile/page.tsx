@@ -56,6 +56,10 @@ export default function ProfilePage() {
     if (isConnected && userIdentity?.uid && auth.currentUser) {
       const fetchData = async () => {
         try {
+          if (!auth.currentUser) {
+            setIsLoading(false);
+            return;
+          }
           const idToken = await getIdToken(auth.currentUser);
           const sensitiveData = await getAndDecryptSensitiveData(userIdentity.uid, idToken);
           

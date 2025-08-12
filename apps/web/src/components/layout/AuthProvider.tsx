@@ -16,7 +16,10 @@ const defaultAuthContextValue: AuthContextType = {
   userIdentity: null,
   userDid: null,
   isConnected: false,
-  logout: async () => {},
+  logout: async () => {
+    // Tambahkan log agar tidak empty function
+    console.log('User logged out (default context)');
+  },
 };
 
 // Buat konteks untuk autentikasi dengan nilai awal yang sudah didefinisikan

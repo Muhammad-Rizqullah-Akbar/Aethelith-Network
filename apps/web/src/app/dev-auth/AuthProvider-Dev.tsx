@@ -23,7 +23,10 @@ const defaultAuthContextValue: AuthContextType = {
   isLoggedIn: false,
   loading: false,
   loginDeveloper: async () => false,
-  logout: () => {},
+  logout: () => {
+    // Tambahkan log agar tidak empty function
+    console.log('User logged out (default context)');
+  },
 };
 
 const AuthContext = createContext<AuthContextType>(defaultAuthContextValue);
@@ -57,6 +60,7 @@ export function AuthProviderDev({ children }: { children: ReactNode }) {
     setIsLoggedIn(false);
     localStorage.removeItem('dummyUser');
     router.push('/dev-auth');
+  console.log('User logged out (dummy dev)');
   };
 
   return (
