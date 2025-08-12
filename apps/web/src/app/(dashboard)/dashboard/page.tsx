@@ -20,7 +20,7 @@ import styles from './dashboard.module.css';
 import { initializeApp } from 'firebase/app';
 
 // Import fungsi dari lib/indexedDB
-import { getDecryptedUserData, UserData as DecryptedUserDataInterface } from '../../lib/indexedDB';
+import { getDecryptedUserData, UserData as DecryptedUserDataInterface } from '../../../lib/indexedDB';
 import AccessDenied from 'src/components/throwError/AccessDenied';
 
 declare const __firebase_config: string;

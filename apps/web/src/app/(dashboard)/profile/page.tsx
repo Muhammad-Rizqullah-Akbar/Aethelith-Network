@@ -4,11 +4,11 @@ import { useState, useEffect } from 'react';
 import { AiOutlineUser, AiOutlineIdcard, AiOutlineTrophy, AiOutlineCheckCircle, AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 import { IoIosDocument } from "react-icons/io";
 import Link from 'next/link';
-import { useAuth } from '../../components/layout/AuthProvider';
-import { CopyButton } from '../../components/layout/CopyButton';
+import { useAuth } from '../../../components/auth/AuthProvider';
+import { CopyButton } from '../../../components/layout/CopyButton';
 import styles from './Profile.module.css';
 
-import { getAndDecryptSensitiveData } from '../../lib/indexedDB';
+import { getAndDecryptSensitiveData } from '../../../lib/indexedDB';
 import { getAuth, getIdToken } from 'firebase/auth';
 
 interface VCItemProps {

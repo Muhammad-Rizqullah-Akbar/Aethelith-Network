@@ -3,8 +3,8 @@
 import Link from 'next/link';
 import { useState, useRef, useEffect } from 'react';
 import { AiOutlineUser, AiOutlineSetting, AiOutlineLogout, AiOutlineSun, AiOutlineMoon } from 'react-icons/ai';
-import { Modal } from './modal';
-import { CopyButton } from './CopyButton';
+import { Modal } from '../layout/modal';
+import { CopyButton } from '../layout/CopyButton';
 import { useUserIdentity } from '../hooks/useUserIdentity';
 import styles from './navbar.module.css'; // Perbaikan: Mengimpor CSS dari navbar.module.css
 

@@ -1,6 +1,6 @@
 // apps/web/src/app/register/page.tsx
 
-import AuthLayout from '../../components/auth/AuthLayout';
+import AuthLayout from '../../../components/auth/AuthLayout';
 import { Suspense } from 'react';
 
 export default function RegisterPage() {

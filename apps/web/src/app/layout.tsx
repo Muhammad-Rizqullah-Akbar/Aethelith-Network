@@ -4,11 +4,11 @@
 import { useState, useEffect } from 'react';
 import './global.css';
 import { Providers } from './provider';
-import { Sidebar } from '../components/layout/sidebar';
+import { Sidebar } from '../components/dashboard/sidebar';
 import { Navbar } from '../components/layout/navbar';
 import { Inter } from 'next/font/google';
 import { usePathname } from 'next/navigation';
-import { useAuth } from '../components/layout/AuthProvider';
+import { useAuth } from '../components/auth/AuthProvider';
 import { AiOutlineMenu, AiOutlineClose } from 'react-icons/ai';
 import styles from './layout.module.css';
 
