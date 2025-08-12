@@ -1,7 +1,0 @@
-// .vscode/settings.json
-{
-  "solidity.remappings": [
-    "@openzeppelin/contracts/=lib/openzeppelin-contracts/",
-    "forge-std/=lib/forge-std/"
-  ]
-}
