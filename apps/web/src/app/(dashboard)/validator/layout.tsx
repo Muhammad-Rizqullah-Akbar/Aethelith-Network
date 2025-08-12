@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { Inter } from 'next/font/google';
 import { AiOutlineMenu, AiOutlineClose } from 'react-icons/ai';
 import { ValidatorSidebar } from '../../../components/dashboard/validator-sidebar';
-import styles from '../layout.module.css';
+import styles from '../../layout.module.css';
 
 const inter = Inter({ subsets: ['latin'] });
 

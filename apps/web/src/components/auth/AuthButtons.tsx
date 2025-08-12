@@ -6,7 +6,7 @@ import { AiOutlineUser, AiOutlineSetting, AiOutlineLogout, AiOutlineSun, AiOutli
 import { Modal } from '../layout/modal';
 import { CopyButton } from '../layout/CopyButton';
 import { useUserIdentity } from '../hooks/useUserIdentity';
-import styles from './navbar.module.css'; // Perbaikan: Mengimpor CSS dari navbar.module.css
+import styles from '../layout/navbar.module.css'; // Perbaikan: Mengimpor CSS dari navbar.module.css
 
 export function AuthButtons() {
   const { userDid, isConnected, logout } = useUserIdentity();
