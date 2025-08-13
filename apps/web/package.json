@@ -11,7 +11,10 @@
   "dependencies": {
     "@heroicons/react": "^2.2.0",
     "@tanstack/react-query": "^5.83.0",
+    "@types/bcrypt": "^6.0.0",
+    "@types/bcryptjs": "^2.4.6",
     "autoprefixer": "^10.4.19",
+    "bcryptjs": "^3.0.2",
     "fabric-network": "^2.2.20",
     "firebase": "^12.0.0",
     "fs-extra": "^11.3.1",

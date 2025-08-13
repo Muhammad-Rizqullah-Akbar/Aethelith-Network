@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { AuthButtons } from './AuthButtons';
+import { AuthButtons } from '../auth/AuthButtons';
 import styles from './navbar.module.css';
 
 // Mendefinisikan interface props untuk Navbar

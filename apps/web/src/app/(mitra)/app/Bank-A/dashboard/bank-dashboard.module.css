@@ -1,0 +1,232 @@
+/* apps/web/src/app/mitra/app/bank-a/dashboard/bank-dashboard.module.css */
+
+.dashboardContainer {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #f0f4f8; /* Latar belakang cerah */
+  color: #1a202c;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.dashboardHeader {
+  background: linear-gradient(to right, #004d99, #007bff);
+  color: #ffffff;
+  padding: 3rem 2rem;
+  border-bottom-left-radius: 2rem;
+  border-bottom-right-radius: 2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  position: relative;
+}
+
+.userSection {
+  text-align: left;
+}
+
+.greeting {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.accountHolder {
+  font-size: 1rem;
+  opacity: 0.8;
+  margin-top: 0.5rem;
+}
+
+.accountCard {
+  background-color: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  text-align: right;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  position: absolute;
+  bottom: -2rem;
+  right: 2rem;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.cardLabel {
+  font-size: 0.9rem;
+  margin: 0;
+  opacity: 0.8;
+}
+
+.cardBalance {
+  font-size: 2rem;
+  font-weight: 900;
+  margin: 0.5rem 0;
+}
+
+.cardNumber {
+  font-size: 0.9rem;
+  margin: 0;
+  opacity: 0.7;
+}
+
+.dashboardMainContent {
+  padding: 4rem 2rem 2rem;
+  flex-grow: 1;
+  max-width: 80rem;
+  margin: 0 auto;
+}
+
+.actionsSection {
+  display: flex;
+  justify-content: space-around;
+  gap: 1rem;
+  margin-bottom: 3rem;
+}
+
+.actionButton {
+  background-color: #ffffff;
+  padding: 1.5rem 1rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-grow: 1;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.actionButton:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.actionIcon {
+  font-size: 2.5rem;
+  color: #007bff;
+  margin-bottom: 0.5rem;
+}
+
+.actionLabel {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.transactionsSection {
+  background-color: #ffffff;
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.sectionTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: #004d99;
+  border-left: 4px solid #007bff;
+  padding-left: 1rem;
+}
+
+.transactionList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.transactionItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 0;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.transactionItem:last-child {
+  border-bottom: none;
+}
+
+.transactionInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.transactionDescription {
+  font-weight: 600;
+  margin: 0;
+}
+
+.transactionDate {
+  font-size: 0.8rem;
+  color: #6c757d;
+  margin-top: 0.2rem;
+}
+
+.transactionAmount {
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.credit {
+  color: #28a745;
+}
+
+.debit {
+  color: #dc3545;
+}
+
+.dashboardFooter {
+  display: flex;
+  justify-content: space-around;
+  background-color: #ffffff;
+  padding: 1rem;
+  border-top: 1px solid #e2e8f0;
+  position: sticky;
+  bottom: 0;
+  width: 100%;
+}
+
+.footerLink,
+.footerButton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  color: #6c757d;
+  text-decoration: none;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  background: none;
+  border: none;
+  transition: color 0.2s ease;
+}
+
+.footerLink:hover,
+.footerButton:hover {
+  color: #007bff;
+}
+
+/* Responsif */
+@media (max-width: 768px) {
+  .dashboardHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .accountCard {
+    position: relative;
+    width: 100%;
+    margin-top: 2rem;
+    bottom: 0;
+    right: 0;
+    text-align: left;
+  }
+  .actionsSection {
+    flex-wrap: wrap;
+  }
+  .actionButton {
+    min-width: 45%;
+  }
+}

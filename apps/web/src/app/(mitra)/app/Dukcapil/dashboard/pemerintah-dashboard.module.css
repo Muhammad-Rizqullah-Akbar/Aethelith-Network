@@ -1,0 +1,240 @@
+/* apps/web/src/app/mitra/app/pemerintah-x/dashboard/pemerintah-dashboard.module.css */
+
+/* --- Variabel CSS --- */
+
+/* --- Gaya Global & Layout --- */
+.dashboardContainer {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--primary-bg-govt);
+  color: var(--text-primary-govt);
+  font-family: 'Arial', sans-serif;
+}
+
+.dashboardHeader {
+  background: linear-gradient(to right, #004085, #007bff);
+  color: #ffffff;
+  padding: 3rem 2rem;
+  border-bottom-left-radius: 2rem;
+  border-bottom-right-radius: 2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  position: relative;
+}
+
+.userSection {
+  text-align: left;
+}
+
+.greeting {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.accountHolder {
+  font-size: 1rem;
+  opacity: 0.8;
+  margin-top: 0.5rem;
+}
+
+.summaryCard {
+  background-color: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  text-align: right;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  position: absolute;
+  bottom: -2rem;
+  right: 2rem;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.cardLabel {
+  font-size: 0.9rem;
+  margin: 0;
+  opacity: 0.8;
+}
+
+.cardValue {
+  font-size: 2rem;
+  font-weight: 900;
+  margin: 0.5rem 0;
+}
+
+.cardSubText {
+  font-size: 0.8rem;
+  margin: 0;
+  opacity: 0.7;
+}
+
+.dashboardMainContent {
+  padding: 4rem 2rem 2rem;
+  flex-grow: 1;
+  max-width: 80rem;
+  margin: 0 auto;
+}
+
+.actionsSection {
+  display: flex;
+  justify-content: space-around;
+  gap: 1rem;
+  margin-bottom: 3rem;
+}
+
+.actionButton {
+  background-color: #ffffff;
+  padding: 1.5rem 1rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-grow: 1;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.actionButton:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.actionIcon {
+  font-size: 2.5rem;
+  color: #007bff;
+  margin-bottom: 0.5rem;
+}
+
+.actionLabel {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.verificationsSection {
+  background-color: #ffffff;
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  margin-bottom: 2rem;
+}
+
+.sectionTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: var(--accent-color-govt);
+  border-left: 4px solid #007bff;
+  padding-left: 1rem;
+}
+
+.verificationList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.verificationItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--border-color-govt);
+}
+
+.verificationItem:last-child {
+  border-bottom: none;
+}
+
+.verificationInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.verificationDescription {
+  font-weight: 600;
+  margin: 0;
+}
+
+.verificationDate {
+  font-size: 0.8rem;
+  color: var(--text-secondary-govt);
+  margin-top: 0.2rem;
+}
+
+.verificationStatus {
+  display: inline-block;
+  font-size: 0.8rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+.statusSuccess {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.statusPending {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.dashboardFooter {
+  display: flex;
+  justify-content: space-around;
+  background-color: #ffffff;
+  padding: 1rem;
+  border-top: 1px solid var(--border-color-govt);
+  position: sticky;
+  bottom: 0;
+  width: 100%;
+}
+
+.footerLink,
+.footerButton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--text-secondary-govt);
+  text-decoration: none;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  background: none;
+  border: none;
+  transition: color 0.2s ease;
+}
+
+.footerLink:hover,
+.footerButton:hover {
+  color: #007bff;
+}
+
+@media (max-width: 768px) {
+  .dashboardHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .summaryCard {
+    position: relative;
+    width: 100%;
+    margin-top: 2rem;
+    bottom: 0;
+    right: 0;
+    text-align: left;
+  }
+  .actionsSection {
+    flex-wrap: wrap;
+  }
+  .actionButton {
+    min-width: 45%;
+  }
+}

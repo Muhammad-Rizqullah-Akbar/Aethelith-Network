@@ -1,0 +1,462 @@
+/* apps/web/src/app/mitra/app/bank-a/mitra-app-bank-a.module.css */
+
+.appContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: #f0f4f8; /* Latar belakang cerah */
+  color: #1a202c;
+  padding: 2rem;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.appHeader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.appLogo {
+  font-size: 2.5rem;
+  color: #004d99; /* Biru gelap khas bank */
+}
+
+.appTitle {
+  font-size: 2.5rem;
+  font-weight: 700;
+  text-transform: capitalize;
+  color: #004d99;
+}
+
+.appMainContent {
+  width: 100%;
+  max-width: 50rem;
+}
+
+.simulasiCard {
+  background-color: #ffffff;
+  padding: 3rem;
+  border-radius: 1rem;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e2e8f0;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.cardTitle {
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.cardDescription {
+  font-size: 1rem;
+  color: #4a5568;
+  line-height: 1.5;
+}
+
+/* Tombol untuk memilih metode verifikasi */
+.verificationMethodGrid {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+  width: 100%;
+  justify-content: center;
+}
+
+.regularKycButton,
+.connectButton {
+  flex: 1;
+  max-width: 250px;
+  padding: 1rem 2rem;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: none;
+}
+
+.regularKycButton {
+  background-color: #e2e8f0;
+  color: #1a202c;
+}
+
+.regularKycButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.connectButton {
+  background: linear-gradient(to right, #007bff, #0056b3);
+  color: #ffffff;
+  border: none;
+}
+
+.connectButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* Gaya Form KYC Biasa */
+.regularKycForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 400px;
+}
+
+.kycForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+}
+
+.kycInputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  text-align: left;
+}
+
+.kycInput {
+  padding: 0.75rem 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  background-color: #f0f4f8;
+  color: #1a202c;
+  font-size: 1rem;
+}
+
+.kycSubmitButton {
+  background: linear-gradient(to right, #007bff, #0056b3);
+  color: #ffffff;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.kycSubmitButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.kycError {
+  color: #dc3545;
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+/* Gaya Upload Foto */
+.uploadBox {
+  width: 100%;
+  height: 250px;
+  border: 2px dashed #b0b8c4;
+  border-radius: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.uploadBox:hover {
+  border-color: #007bff;
+}
+
+.uploadLabel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  color: #6c757d;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.uploadIcon {
+  font-size: 3rem;
+  color: #6c757d;
+}
+
+.fileInput {
+  display: none;
+}
+
+.uploadedImage {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 1rem;
+}
+
+/* Gaya Kamera */
+.cameraFeed {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 1rem;
+}
+
+.cameraButton {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #007bff;
+  color: #ffffff;
+  border: none;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cameraButton:hover {
+  transform: translate(-50%, -50%) scale(1.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+
+.verificationMessage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.loadingSpinner {
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 4px solid #007bff;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto;
+}
+
+.success .cardTitle,
+.success .cardDescription {
+  color: #28a745;
+}
+
+.successIcon {
+  font-size: 3rem;
+  color: #28a745;
+}
+
+.failed .cardTitle,
+.failed .cardDescription {
+  color: #dc3545;
+}
+
+.failedIcon {
+  font-size: 3rem;
+  color: #dc3545;
+}
+
+.appFooter {
+  margin-top: 4rem;
+  font-size: 0.8rem;
+  color: #6c757d;
+}
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.75);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modalContent {
+  background-color: #ffffff;
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  width: 90%;
+  max-width: 28rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 1rem;
+}
+
+.modalTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.modalCloseButton {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #6c757d;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.modalCloseButton:hover {
+  color: #1a202c;
+}
+
+.modalDescription {
+  color: #4a5568;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.verificationList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  text-align: left;
+}
+
+.verificationList li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #1a202c;
+}
+
+.checkIcon {
+  color: #28a745;
+  font-size: 1.25rem;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.modalCancelButton {
+  padding: 0.75rem 1.5rem;
+  background-color: #e2e8f0;
+  color: #1a202c;
+  border-radius: 0.5rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.modalConfirmButton {
+  background: linear-gradient(to right, #007bff, #0056b3);
+  color: #ffffff;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.modalConfirmButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.loginForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.loginInput {
+  background-color: #f0f4f8;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  color: #1a202c;
+  font-size: 1rem;
+}
+
+.loginError {
+  color: #dc3545;
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+.loginButton {
+  background: linear-gradient(to right, #007bff, #0056b3);
+  color: #ffffff;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@media (max-width: 768px) {
+  .appTitle {
+    font-size: 2rem;
+  }
+  .simulasiCard {
+    padding: 2rem;
+  }
+  .cardTitle {
+    font-size: 1.5rem;
+  }
+  .modalContent {
+    max-width: 90%;
+  }
+  .modalActions {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .verificationMethodGrid {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .regularKycButton,
+  .connectButton {
+    width: 100%;
+  }
+}

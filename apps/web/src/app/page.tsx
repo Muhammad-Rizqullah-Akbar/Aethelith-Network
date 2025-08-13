@@ -8,7 +8,7 @@ import { Navbar } from '../components/layout/navbar';
 import { useEffect, useRef, useState } from 'react';
 import styles from './page.module.css';
 import navbarStyles from '../components/layout/navbar.module.css';
-import { useAuth } from '../components/layout/AuthProvider';
+import { useAuth } from '../components/auth/AuthProvider';
 
 const features = [
   {
