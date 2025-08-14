@@ -1,4 +1,3 @@
-// apps/web/src/app/dev-auth/page.tsx
 'use client';
 //hai nigg
 
@@ -121,6 +120,14 @@ function DevAuthContent() {
           {isLoading ? 'Memverifikasi...' : 'Login'}
         </button>
       </form>
+      <div className={styles.registerLinkContainer}>
+        <p className={styles.registerLinkText}>
+          Belum memiliki akun perusahaan? {' '}
+          <button onClick={() => router.push('/dev-register')} className={styles.registerLinkButton}>
+            Silahkan registrasi untuk perusahaan anda di halaman registrasi
+          </button>
+        </p>
+      </div>
     </div>
   );
 }

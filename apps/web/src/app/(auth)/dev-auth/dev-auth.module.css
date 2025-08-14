@@ -159,3 +159,29 @@
     padding: 2rem 1.5rem;
   }
 }
+
+.registerLinkContainer {
+  margin-top: 1.5rem;
+  text-align: center;
+}
+
+.registerLinkText {
+  color: #6b7280; /* Warna abu-abu */
+  font-size: 0.875rem; /* Ukuran teks kecil */
+}
+
+.registerLinkButton {
+  background: none;
+  border: none;
+  color: var(--accent-color-start); /* Warna ungu */
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.registerLinkButton:hover {
+  color: #6366f1; /* Warna ungu yang lebih terang saat hover */
+}
