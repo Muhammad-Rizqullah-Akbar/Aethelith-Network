@@ -231,7 +231,7 @@ export default function DashboardPage() {
             <div key={index} className={styles.partnerCard}>
               <img src={partner.logo} alt={`${partner.name} logo`} className={styles.partnerLogo} />
               <p className={styles.partnerName}>{partner.name}</p>
-              <Link href={`/mitra/app/${partner.name}`} className={styles.accessAppButton} target='_blank'>
+              <Link href={`/app/${partner.name}`} className={styles.accessAppButton} target='_blank'>
                 Akses App
               </Link>
             </div>
