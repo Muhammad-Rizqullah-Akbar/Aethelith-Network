@@ -7,18 +7,18 @@ import styles from './about.module.css';
 const teamMembers = [
   {
     name: "Muhammad Rizqullah Akbar Adlan",
-    role: "Co-Founder & CEO",
+    role: "Founder & CEO",
     description: "Memimpin visi strategis dan inovasi teknologi di Aethelith Network.",
   },
   {
     name: "Mutiah Arinil Fayza Nusar",
     role: "Co-Founder & Head of Operations",
-    description: "Mengelola operasional harian dan kemitraan strategis dengan organisasi eksternal.",
+    description: "Mengelola operasional harian dan kemitraan strategis.",
   },
   {
     name: "Amrullah",
     role: "Co-Founder & CTO",
-    description: "Bertanggung jawab atas arsitektur teknis dan pengembangan sistem inti blockchain.",
+    description: "Bertanggung jawab atas arsitektur teknis dan pengembangan sistem inti Teknologi.",
   }
 ];
 
