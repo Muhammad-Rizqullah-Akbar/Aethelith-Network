@@ -11,23 +11,23 @@ import (
 
 
 type Identity struct {
-	ID             string                  `json:"id"`             
-	FullName       string                  `json:"fullName"`       
-	NIK            string                  `json:"nik"`            
-	BirthPlace     string                  `json:"birthPlace"`     
-	BirthDate      string                  `json:"birthDate"`      
-	Address        string                  `json:"address"`        
+	ID             string                  `json:"id"
+	FullName       string                  `json:"fullName"`
+	NIK            string                  `json:"nik"`
+	BirthPlace     string                  `json:"birthPlace"`
+	BirthDate      string                  `json:"birthDate"`
+	Address        string                  `json:"address"`
 	Email          string                  `json:"email"`          
-	VerificationVC map[string]VerificationVC `json:"verificationVC"` 
+	VerificationVC map[string]VerificationVC `json:"verificationVC"`
 }
 
 
 
 type VerificationVC struct {
-	Status   string `json:"status"`   
-	IssuedBy string `json:"issuedBy"` 
-	IssuedAt string `json:"issuedAt"` 
-	DataHash string `json:"dataHash"` 
+	Status   string `json:"status"`
+	IssuedBy string `json:"issuedBy"`
+	IssuedAt string `json:"issuedAt"`
+	DataHash string `json:"dataHash"`
 }
 
 
@@ -38,7 +38,7 @@ type SmartContract struct {
 
 
 func (s *SmartContract) InitLedger(ctx contractapi.TransactionContextInterface) error {
-	
+
 	return nil
 }
 
@@ -46,7 +46,7 @@ func (s *SmartContract) InitLedger(ctx contractapi.TransactionContextInterface) 
 
 
 func (s *SmartContract) RegisterIdentity(ctx contractapi.TransactionContextInterface, id string, fullName string, email string, nik string, birthPlace string, birthDate string, address string) error {
-	
+
 	identityJSON, err := ctx.GetStub().GetPrivateData("collectionUserIdentities", id)
 	if err != nil {
 		return fmt.Errorf("gagal membaca data dari private collection: %v", err)
@@ -63,7 +63,7 @@ func (s *SmartContract) RegisterIdentity(ctx contractapi.TransactionContextInter
 		BirthPlace:     birthPlace,
 		BirthDate:      birthDate,
 		Address:        address,
-		VerificationVC: make(map[string]VerificationVC), 
+		VerificationVC: make(map[string]VerificationVC),
 	}
 
 	identityJSON, err = json.Marshal(identity)
@@ -71,8 +71,8 @@ func (s *SmartContract) RegisterIdentity(ctx contractapi.TransactionContextInter
 		return fmt.Errorf("gagal marshal identitas ke JSON: %v", err)
 	}
 
-	
-	
+
+
 	return ctx.GetStub().PutPrivateData("collectionUserIdentities", id, identityJSON)
 }
 
@@ -81,17 +81,17 @@ func (s *SmartContract) RegisterIdentity(ctx contractapi.TransactionContextInter
 
 
 func (s *SmartContract) RequestVerification(ctx contractapi.TransactionContextInterface, id string, vcType string) error {
-	
+
 	userMSPID, err := ctx.GetClientIdentity().GetMSPID()
 	if err != nil {
 		return fmt.Errorf("gagal mendapatkan MSP ID pemanggil: %v", err)
 	}
-	
+
 	if userMSPID != "Org1MSP" {
     	return fmt.Errorf("hanya user yang bisa mengajukan verifikasi")
 	}
 
-	
+
 	identityJSON, err := ctx.GetStub().GetPrivateData("collectionUserIdentities", id)
 	if err != nil {
 		return fmt.Errorf("gagal membaca data dari private collection: %v", err)
@@ -106,7 +106,7 @@ func (s *SmartContract) RequestVerification(ctx contractapi.TransactionContextIn
 		return fmt.Errorf("gagal unmarshal JSON: %v", err)
 	}
 
-	
+
 	identity.VerificationVC[vcType] = VerificationVC{
 		Status: "pending",
 	}
@@ -123,17 +123,17 @@ func (s *SmartContract) RequestVerification(ctx contractapi.TransactionContextIn
 
 
 func (s *SmartContract) ValidateIdentity(ctx contractapi.TransactionContextInterface, id string, vcType string, dataHash string) error {
-	
+
 	validatorMSPID, err := ctx.GetClientIdentity().GetMSPID()
 	if err != nil {
 		return fmt.Errorf("gagal mendapatkan MSP ID pemanggil: %v", err)
 	}
-	
+
 	if validatorMSPID != "Org2MSP" {
     	return fmt.Errorf("hanya validator yang bisa memverifikasi identitas")
 	}
 
-	
+
 	identityJSON, err := ctx.GetStub().GetPrivateData("collectionUserIdentities", id)
 	if err != nil {
 		return fmt.Errorf("gagal membaca data dari private collection: %v", err)
@@ -148,24 +148,24 @@ func (s *SmartContract) ValidateIdentity(ctx contractapi.TransactionContextInter
 		return fmt.Errorf("gagal unmarshal JSON: %v", err)
 	}
 
-	
+
 	if _, exists := identity.VerificationVC[vcType]; !exists {
 		return fmt.Errorf("jenis verifikasi '%s' belum diajukan oleh user", vcType)
 	}
 
-	
+
 	timestamp, err := ctx.GetStub().GetTxTimestamp()
 	if err != nil {
 		return fmt.Errorf("failed to get transaction timestamp: %v", err)
 	}
 	issuedAt := time.Unix(timestamp.GetSeconds(), int64(timestamp.GetNanos())).String()
 
-	
+
 	identity.VerificationVC[vcType] = VerificationVC{
 		Status:   "verified",
 		IssuedBy: validatorMSPID,
 		IssuedAt: issuedAt,
-		DataHash: dataHash, 
+		DataHash: dataHash,
 	}
 
 	updatedJSON, err := json.Marshal(identity)
